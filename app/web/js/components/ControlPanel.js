@@ -7,10 +7,12 @@ const MODES = [
   { key: 'direct', label: '直连对照' },
 ];
 
+// 档位不只是标签：点档位要把数值参数一起带过去，否则「深度」和「快速」跑出来的
+// 时长与流量完全一样，界面上的强度选择就是一具空壳。数值与后端 presetDefaults 保持一致。
 const PRESETS = [
-  { key: 'quick', label: '快速' },
-  { key: 'standard', label: '标准' },
-  { key: 'deep', label: '深度' },
+  { key: 'quick', label: '快速', defaults: { concurrency: 1, budgetMb: 20, durationSec: 8, timeoutSec: 15 } },
+  { key: 'standard', label: '标准', defaults: { concurrency: 1, budgetMb: 64, durationSec: 15, timeoutSec: 20 } },
+  { key: 'deep', label: '深度', defaults: { concurrency: 1, budgetMb: 160, durationSec: 30, timeoutSec: 25 } },
 ];
 
 // 折叠行里不能出现明文凭据
@@ -52,7 +54,7 @@ export function ControlPanel({ onRun, onCancel }) {
       type: 'button',
       'aria-pressed': String(store.state.config.preset === p.key),
       onclick: () => {
-        store.patch({ config: { ...store.state.config, preset: p.key } });
+        store.patch({ config: { ...store.state.config, preset: p.key, ...p.defaults } });
         render();
       },
     }, p.label);

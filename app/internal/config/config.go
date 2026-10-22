@@ -93,14 +93,18 @@ type defaults struct {
 	timeoutSec  int
 }
 
+// presetDefaults 返回各档位的默认参数。
+// concurrency 恒为 1：单流下载才是「打开一个文件下载」的真实体感，
+// 多流并发会把总带宽叠加成用户实际拿不到的数字（且 HTTP/2 下多条流复用同一条 TCP，
+// 界面上写着「N 并发」而实际只有 1 条连接）。需要跑满带宽时由用户在设置里手动调高。
 func presetDefaults(p string) defaults {
 	switch p {
 	case PresetStandard:
-		return defaults{6, 64, 15, 20}
+		return defaults{1, 64, 15, 20}
 	case PresetDeep:
-		return defaults{8, 160, 30, 25}
+		return defaults{1, 160, 30, 25}
 	default:
-		return defaults{5, 20, 8, 15}
+		return defaults{1, 20, 8, 15}
 	}
 }
 

@@ -100,7 +100,13 @@ func Aggregate(results []*probe.Result) Summary {
 	// 封顶规则：ChatGPT 网页被拦截时，不能给"AI 可用"的高分（避免绿色误导）
 	if p3 := byID["P3"]; p3 != nil {
 		switch p3.Status {
-		case probe.StatusChallenge, probe.StatusRegionBlock, probe.StatusHijacked, probe.StatusFailed:
+		case probe.StatusChallenge:
+			// JS 验证页：浏览器通常能过，但本工具证明不了，只压分不定性
+			if aiVal > 60 {
+				aiVal = 60
+				caps = append(caps, "ChatGPT 网页被要求人机验证（浏览器通常可过，需实开确认），AI 分封顶 60")
+			}
+		case probe.StatusRegionBlock, probe.StatusHijacked, probe.StatusFailed:
 			if aiVal > 60 {
 				aiVal = 60
 				caps = append(caps, "ChatGPT 网页不可用，AI 分封顶 60")
@@ -302,6 +308,11 @@ func gateOf(byID map[string]*probe.Result) (string, string) {
 	// 硬阻断：任一 AI 端点处于"链路通但业务不通"的状态，整体都不能算可用。
 	// 尤其是 degraded / rate_limited —— 它们证明连接建立了，但服务端在降级或限流，
 	// 用户此刻打开网页就是不能用。漏掉它们会直接产出"浏览器打不开却报优秀"的假绿。
+	//
+	// StatusChallenge 也留在这里，作为刻意的保守选择：它多半是站点发的一张 JS 验证页
+	// （浏览器通常能过），但本工具不执行 JS，无法证明用户能过。
+	// 用户定的红线是"宁可保守，也不能说能用其实不能用"——假绿的代价远大于假红，
+	// 所以维持阻断，只把文案讲清楚（"浏览器通常能过，请实开确认"），不擅自放行。
 	hardBlock := false
 	for _, r := range []*probe.Result{p3, p4, p5} {
 		if r == nil {
@@ -346,7 +357,7 @@ func siteReason(r *probe.Result) string {
 	}
 	switch r.Status {
 	case probe.StatusChallenge:
-		return name + " 被人机验证拦截，链路本身是通的"
+		return name + " 返回人机验证页（浏览器通常能过，本工具不执行 JS 过不去）"
 	case probe.StatusRegionBlock:
 		return name + " 判定当前出口地区不受支持"
 	case probe.StatusHijacked:
@@ -423,7 +434,7 @@ func advice(byID map[string]*probe.Result, total float64, state string) []string
 	p3, p4 := byID["P3"], byID["P4"]
 
 	if p3 != nil && p3.Status == probe.StatusChallenge {
-		out = append(out, "ChatGPT 遇到人机验证：优先更换出口 IP 段（住宅/家宽优先），或换一个地区节点后重测")
+		out = append(out, "ChatGPT 返回的是人机验证页：先用浏览器实开一次再判断（浏览器能过就是正常），确认过不去再换出口 IP 段")
 	}
 	if p4 != nil && p4.Status == probe.StatusRegionBlock {
 		out = append(out, "Gemini 地区受限：把节点切到美国/日本/新加坡等支持地区")

@@ -2,7 +2,7 @@ import { h, clear } from '../core/dom.js';
 import { store } from '../core/store.js';
 
 const FIELDS = [
-  { key: 'concurrency', label: '并发连接数', desc: '大文件下载使用的并发流数量，越高越吃带宽', min: 1, max: 16 },
+  { key: 'concurrency', label: '并发连接数', desc: '默认 1 条流，等于你点「下载」时的真实速度；调高会把多流带宽叠加，数字更好看但你实际拿不到', min: 1, max: 16 },
   { key: 'budgetMb', label: '流量预算 (MB)', desc: '单次下载测试最多消耗的流量', min: 4, max: 512 },
   { key: 'durationSec', label: '下载时长 (秒)', desc: '大文件下载的最长持续时间', min: 3, max: 120 },
   { key: 'timeoutSec', label: '单请求超时 (秒)', desc: '任一 HTTP 请求的超时上限', min: 5, max: 60 },

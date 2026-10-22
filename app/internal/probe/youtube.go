@@ -266,9 +266,19 @@ func ytClassifyPage(f *FetchResult, pbStatus, pbReason string) (Status, string) 
 	if strings.Contains(strings.ToLower(f.FinalURL), "consent.youtube.com") || ytHit(f.Body, ytConsentMarkers) != "" {
 		return StatusDegraded, "被跳到 cookie / 条款同意页，会话被拦在播放器之外"
 	}
-	// YouTube 自己说要先验证：属目标侧策略，不是链路故障，必须与「打不开」分开
+	// 「先证明你不是机器人」：这是 YouTube 对本工具这条**无 Cookie 匿名请求**的判词，
+	// 不是对用户浏览器的判词。真机对照（2026-10-22，Chromium + 真实登录态）已证实：
+	// 匿名 watch 页给出 LOGIN_REQUIRED / "Sign in to confirm you're not a bot" 的同一环境里，
+	// 浏览器打开同一个视频 readyState=4、duration 634s、MSE blob 正常，完整可播。
+	//
+	// 因此这里绝不能判 challenge —— 那会把「能看 YouTube」写成「被封控」并拉低总分，
+	// 正是用户报的"测试结果和实际不一致"。只有连播放器数据都拿不到（页面本身就是一张
+	// 验证插页）时，才降级并明确要求人工实开确认。
 	if ytHit(f.Body, ytBotMarkers) != "" || strings.Contains(reason, "not a bot") {
-		return StatusChallenge, "YouTube 要求先确认「不是机器人」（登录或人机验证），匿名探测到此为止"
+		if !ytHasPlayer(f.Body) {
+			return StatusDegraded, "匿名访问被要求先验证「不是机器人」，且页面里没有播放器数据（浏览器登录后通常可播，需实开确认）"
+		}
+		// 有播放器数据就继续走状态码与 playabilityStatus，不在此定性
 	}
 	if ytHit(f.Body, ytRegionMarkers) != "" ||
 		strings.Contains(reason, "country") || strings.Contains(reason, "region") {
@@ -287,7 +297,9 @@ func ytClassifyPage(f *FetchResult, pbStatus, pbReason string) (Status, string) 
 		case "OK":
 			return StatusOK, "播放页可正常打开"
 		case "LOGIN_REQUIRED":
-			return StatusChallenge, "播放器要求登录后才能播放（匿名探测无法绕过）"
+			// 同上：匿名请求被要求登录 ≠ 浏览器不可播（已实机对照）。
+			// 判 challenge 会直接产出假阴性，这里只作为提示，不参与定性。
+			return StatusOK, "播放页可正常打开（匿名接口要求登录验证，不影响浏览器播放）"
 		case "UNPLAYABLE", "ERROR", "LIVE_STREAM_OFFLINE":
 			msg := "播放器自述无法播放：" + pbStatus
 			if pbReason != "" {
@@ -350,6 +362,7 @@ func RunYouTube(ctx context.Context, tr *http.Transport, maxBody int64) *Result 
 
 	pageStatus := StatusFailed
 	pageHint := ""
+	anonVerify := false // 匿名请求是否被要求「先证明不是机器人」
 	var pbStatus, pbReason string
 	if f1.Err != nil {
 		pageStatus = ytStatusOfErr(f1.Err)
@@ -358,6 +371,7 @@ func RunYouTube(ctx context.Context, tr *http.Transport, maxBody int64) *Result 
 		res.Evidence = append(res.Evidence, fmt.Sprintf("播放页连不上（试了 %d 次）：%s", t1Tries, f1.Err.Error()))
 	} else {
 		pbStatus, pbReason = ytPlayability(f1.Body)
+		anonVerify = pbStatus == "LOGIN_REQUIRED" || ytHit(f1.Body, ytBotMarkers) != ""
 		pageStatus, pageHint = ytClassifyPage(f1, pbStatus, pbReason)
 		ev := fmt.Sprintf("播放页 HTTP %d · %d KB · TTFB %.0f ms", f1.Status, f1.BodyLen/1024, f1.Phases.TTFB)
 		if t1Tries > 1 {
@@ -375,6 +389,9 @@ func RunYouTube(ctx context.Context, tr *http.Transport, maxBody int64) *Result 
 			res.Evidence = append(res.Evidence, s)
 		} else {
 			res.Evidence = append(res.Evidence, fmt.Sprintf("页面里没有 playabilityStatus 声明（采样窗口 %d MB），不能据此判断播放能力", maxBody>>20))
+		}
+		if anonVerify {
+			res.Evidence = append(res.Evidence, "匿名接口要求「先确认不是机器人」：这是对无 Cookie 探测请求的限制，不是对浏览器的判词；本项结论以页面本体与视频 CDN 是否连通为准")
 		}
 
 		res.Phases = f1.Phases
@@ -508,6 +525,9 @@ func RunYouTube(ctx context.Context, tr *http.Transport, maxBody int64) *Result 
 			} else {
 				subline += " · 视频边缘未验证"
 			}
+			if anonVerify {
+				subline += " · 匿名接口要求验证"
+			}
 		}
 	case StatusInconclusive:
 		headline = "无法确认"
@@ -552,11 +572,11 @@ func RunYouTube(ctx context.Context, tr *http.Transport, maxBody int64) *Result 
 		// 单轮无法区分，归因必须留待定，并给出唯一值得做的排除动作。
 		res.Attribution = AttrUnknown
 		res.NextStep = "网页能开但视频媒体域不通：先在浏览器里实际播放一次做对照；若也放不了，检查分流规则是否覆盖 googlevideo"
-	} else if pageStatus == StatusChallenge {
-		// 验证页是目标侧按 IP 信誉下的判词，不是链路故障：
-		// 换"地区"没用，换"干净的 IP"才有用，且必须给用户一条能自己复核的动作。
-		res.Attribution = AttrTarget
-		res.NextStep = "用浏览器打开同一个视频确认一次（本工具不登录，验证页不等于你看不了）；若要摆脱验证，换住宅/家宽类出口 IP 比换地区更有效"
+	} else if anonVerify && final == StatusOK {
+		// 注意：这里不能判 challenge。播放页与视频 CDN 都已连通，
+		// "要求验证"只是匿名请求的常态，判成风控就是假阴性（已实机对照证伪）。
+		res.Attribution = AttributionOf(final, f1.Err)
+		res.NextStep = "本项判可看：播放页与视频 CDN 都通了。若想亲自确认，用浏览器打开同一个视频播几秒——匿名接口要求验证是这类请求的常态，不代表你看不了"
 	} else {
 		res.Attribution = AttributionOf(final, f1.Err)
 		res.NextStep = NextStep(res.Attribution)

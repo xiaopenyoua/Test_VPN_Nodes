@@ -1,7 +1,7 @@
 // 单一状态源：只做浅合并 + 订阅通知，避免引入框架。
 const initial = {
   phase: 'idle', // idle | running | done | cancelled | error
-  config: { mode: 'system', proxyUrl: '', preset: 'quick', concurrency: 4, budgetMb: 24, durationSec: 8, timeoutSec: 15 },
+  config: { mode: 'system', proxyUrl: '', preset: 'quick', concurrency: 1, budgetMb: 20, durationSec: 8, timeoutSec: 15 },
   exit: null,
   env: null,
   results: [],

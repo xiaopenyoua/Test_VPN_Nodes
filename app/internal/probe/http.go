@@ -209,9 +209,22 @@ var challengeMarkers = []string{
 	"cf-chl",
 	"challenge-platform",
 	"verify you are human",
-	"attention required",
 	"ddos protection by",
 	"unusual traffic from your computer",
+}
+
+// cfDenyMarkers 是「Cloudflare 直接拒绝这个出口 IP」的特征，与上面的 JS 验证墙
+// 是截然不同的两件事：
+//   - 验证墙（challenge）：浏览器执行 JS 就能过，用户打开是正常的 —— 判成"被封"就是假阴性
+//   - 直接拒绝（本组）：浏览器同样打不开，页面明说"试试关掉 VPN"。判成降级才是事实
+//
+// 2026-10-22 真机对照取证：本机出口（Cloudflare 段 IPv6）访问 chatgpt.com，
+// 真浏览器与纯 Go 探测双双得到 403 + "Unable to load site / If you are using a VPN,
+// try turning it off" + Ray ID，且响应头 cf-mitigated 为空 —— 结论一致，都是硬拒绝。
+var cfDenyMarkers = []string{
+	"unable to load site",
+	"if you are using a vpn, try turning it off",
+	"sorry, you have been blocked",
 }
 
 var regionMarkers = []string{
@@ -289,11 +302,19 @@ func Classify(id string, f *FetchResult) (Status, []string, string) {
 	// Cloudflare 风控优先看响应头，body 正则只作补充（实测 chatgpt.com 返回 403 + cf-mitigated: challenge）
 	if cf := strings.ToLower(f.Header.Get("Cf-Mitigated")); cf == "challenge" {
 		ev = append(ev, "响应头 cf-mitigated: challenge")
-		return StatusChallenge, ev, "链路是通的，但被 Cloudflare 风控拦截，需要人机验证"
+		return StatusChallenge, ev, "链路是通的，站点发了一张 JS 验证页；浏览器会自动过，纯探测过不去——请用浏览器实开一次再判"
+	}
+	// Cloudflare 直接拒绝出口 IP：浏览器同样打不开，属硬拒绝。
+	// 必须排在通用风控特征**之前**：这类拒绝页的标题就是 "Attention Required"，
+	// 而 "attention required" 曾被当成验证墙特征，于是硬拒绝被误判成"人机验证"——
+	// 用户看到"需要验证"会以为刷新一下就好，实际换节点才有用。
+	if m := containsAny(f.Body, cfDenyMarkers); m != "" {
+		ev = append(ev, "命中 Cloudflare 拒绝特征: "+m)
+		return StatusDegraded, ev, "Cloudflare 判定当前出口 IP 是代理/VPN 并直接拒绝（浏览器同样打不开，不是地区限制、也不是你的本地网络坏了）：换一个没被标记的出口节点，原地重试同一个节点不会变"
 	}
 	if m := containsAny(f.Body, challengeMarkers); m != "" {
 		ev = append(ev, "命中人机验证特征: "+m)
-		return StatusChallenge, ev, "链路是通的，但被 CDN 风控拦截，需要人机验证"
+		return StatusChallenge, ev, "链路是通的，站点发了一张 JS 验证页；浏览器会自动过，纯探测过不去——请用浏览器实开一次再判"
 	}
 	if m := containsAny(f.Body, regionMarkers); m != "" {
 		ev = append(ev, "命中地区限制特征: "+m)
