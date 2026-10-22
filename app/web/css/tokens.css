@@ -1,0 +1,121 @@
+/* Design tokens —— 深色优先，亮色覆盖 */
+:root {
+  --bg: #0b0c0e;
+  --surface: #111318;
+  --raised: #171a20;
+  --overlay: #1e2229;
+  --border: #24282f;
+  --border-strong: #333941;
+  /* 控件边界专用：--border 是装饰性描边（1.26:1），不能用来标识可交互控件（WCAG 1.4.11 要求 3:1） */
+  --line-control: #5C6470;
+
+  --text: #e9ebef;
+  --text-2: #9aa1ac;
+  --text-3: #7E8794;
+
+  --brand: #21BFAE;
+  --brand-hover: #2ED4C1;
+  --brand-active: #17A091;
+  --brand-weak: rgba(33, 191, 174, 0.12);
+  /* 青绿底上的文字色：白字仅 2.30:1，必须用近黑（8.26:1） */
+  --brand-ink: #04130F;
+
+  --ok: #35d39a;
+  --ok-bg: rgba(53, 211, 154, 0.12);
+  --ok-border: rgba(53, 211, 154, 0.32);
+
+  --warn: #f5b544;
+  --warn-bg: rgba(245, 181, 68, 0.12);
+  --warn-border: rgba(245, 181, 68, 0.32);
+
+  --danger: #f5726f;
+  --danger-bg: rgba(245, 114, 111, 0.12);
+  --danger-border: rgba(245, 114, 111, 0.32);
+
+  --info: #64a6f5;
+  --info-bg: rgba(100, 166, 245, 0.12);
+  --info-border: rgba(100, 166, 245, 0.32);
+
+  --chart-1: #21BFAE;
+  --chart-2: #35d39a;
+  --chart-3: #f5b544;
+  --chart-4: #c084fc;
+  --chart-5: #f5726f;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro SC", "PingFang SC",
+    "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
+
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-28: 28px;
+  --fs-44: 44px;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-full: 999px;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 24px 64px rgba(0, 0, 0, 0.55);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+}
+
+[data-theme="light"] {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --raised: #f2f4f7;
+  --overlay: #ffffff;
+  --border: #e3e6ec;
+  --border-strong: #cfd5df;
+  --line-control: #838B99;
+
+  --text: #14171c;
+  --text-2: #5a6270;
+  --text-3: #666E7A;
+
+  --brand: #0F766E;
+  --brand-hover: #0D6A62;
+  --brand-active: #0A5A53;
+  --brand-weak: rgba(15, 118, 110, 0.1);
+  --brand-ink: #FFFFFF;
+
+  --ok: #0f9d6e;
+  --ok-bg: rgba(15, 157, 110, 0.1);
+  --ok-border: rgba(15, 157, 110, 0.28);
+
+  --warn: #b7791f;
+  --warn-bg: rgba(183, 121, 31, 0.1);
+  --warn-border: rgba(183, 121, 31, 0.28);
+
+  --danger: #d64545;
+  --danger-bg: rgba(214, 69, 69, 0.1);
+  --danger-border: rgba(214, 69, 69, 0.28);
+
+  --info: #2f6bf0;
+  --info-bg: rgba(47, 107, 240, 0.1);
+  --info-border: rgba(47, 107, 240, 0.28);
+
+  --shadow-1: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-2: 0 8px 24px rgba(16, 24, 40, 0.1);
+  --shadow-3: 0 24px 64px rgba(16, 24, 40, 0.16);
+}
