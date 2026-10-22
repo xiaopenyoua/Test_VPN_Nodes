@@ -43,29 +43,44 @@ type Phase struct {
 
 // Result 是单个探测项的完整结果。
 type Result struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Group       string   `json:"group"` // speed | stability | ai
-	Status      Status   `json:"status"`
-	Headline    string   `json:"headline"` // 主指标展示值，如 "42.3 Mbps"
-	Subline     string   `json:"subline"`  // 副标题，如 "dl.google.com · 24 MB"
-	Phases      Phase    `json:"phases"`
-	HTTPStatus  int      `json:"httpStatus"`
-	FinalURL    string   `json:"finalUrl"`
-	RemoteAddr  string   `json:"remoteAddr"`
-	TLSVersion  string   `json:"tlsVersion"`
-	Bytes       int64    `json:"bytes"`
-	Mbps        float64  `json:"mbps"`
-	PeakMbps    float64  `json:"peakMbps"`
-	P50Mbps     float64  `json:"p50Mbps"`
-	P90Mbps     float64  `json:"p90Mbps"`
-	CV          float64  `json:"cv"`
-	TTFB        float64  `json:"ttfbMs"`
-	Jitter      float64  `json:"jitterMs"`
-	SuccessPct  float64  `json:"successPct"`
-	ConnCount   int      `json:"connCount"` // 实际观测到的独立 TCP 连接数，用来证明"N 并发"名副其实
-	Stalled     bool     `json:"stalled"`   // 下载中途出现持续性零吞吐，均值会把它摊平
-	MediaPath   string   `json:"mediaPath"` // 媒体链路走到哪一级：unavailable/page_only/thumb_only/gvs_handshake
+	ID         string  `json:"id"`
+	Name       string  `json:"name"`
+	Group      string  `json:"group"` // speed | stability | ai
+	Status     Status  `json:"status"`
+	Headline   string  `json:"headline"` // 主指标展示值，如 "42.3 Mbps"
+	Subline    string  `json:"subline"`  // 副标题，如 "dl.google.com · 24 MB"
+	Phases     Phase   `json:"phases"`
+	HTTPStatus int     `json:"httpStatus"`
+	FinalURL   string  `json:"finalUrl"`
+	RemoteAddr string  `json:"remoteAddr"`
+	TLSVersion string  `json:"tlsVersion"`
+	Bytes      int64   `json:"bytes"`
+	Mbps       float64 `json:"mbps"`
+	PeakMbps   float64 `json:"peakMbps"`
+	P50Mbps    float64 `json:"p50Mbps"`
+	P90Mbps    float64 `json:"p90Mbps"`
+	CV         float64 `json:"cv"`
+	TTFB       float64 `json:"ttfbMs"`
+	Jitter     float64 `json:"jitterMs"`
+	SuccessPct float64 `json:"successPct"`
+	ConnCount  int     `json:"connCount"` // 实际观测到的独立 TCP 连接数，用来证明"N 并发"名副其实
+	Stalled    bool    `json:"stalled"`   // 下载中途出现持续性零吞吐，均值会把它摊平
+	MediaPath  string  `json:"mediaPath"` // 媒体链路走到哪一级：unavailable/page_only/thumb_only/gvs_handshake
+
+	// ── 出口地理与水印（参考 OpenClash 流媒体嗅探的口径）──────────────────
+	// Region / Colo / Warp 来自 Cloudflare 的 /cdn-cgi/trace：这是目标站自己
+	// 报出来的出口身份，比任何 HTML 猜测都硬。Warp=true 说明"代理"其实是
+	// Cloudflare WARP 共享出口，这类 IP 被 OpenAI 的 CF 规则直接拒绝是常态。
+	Region string `json:"region"`
+	Colo   string `json:"colo"`
+	Warp   bool   `json:"warp"`
+
+	// ── 长时稳定性（30 分钟档专用）──────────────────────────────────────
+	// 短测的均值会把"跑了 40 秒就停"摊平成好看的数字，正是用户报的
+	// "只能下载一会儿就不行了"。这两项专门把这个事实显式化。
+	StallAtMs  float64 `json:"stallAtMs"`  // 首次持续性掉零的时刻；0 表示未发生
+	SustainPct float64 `json:"sustainPct"` // 有效吞吐窗口占比（0-100）
+
 	Samples     []Sample `json:"samples"`
 	Evidence    []string `json:"evidence"`
 	Error       string   `json:"error"`
@@ -73,6 +88,9 @@ type Result struct {
 	Attribution string   `json:"attribution"`
 	NextStep    string   `json:"nextStep"`
 	DurationMs  float64  `json:"durationMs"`
+
+	// Only 标记这条结果来自「只测这项」的单项复测，不参与总评。
+	Only bool `json:"only"`
 }
 
 // Meta 是探测项的静态元信息，供前端渲染。

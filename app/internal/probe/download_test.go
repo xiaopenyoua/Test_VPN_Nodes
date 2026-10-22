@@ -51,7 +51,11 @@ func TestDownloadUsesHTTP1AndRealConnections(t *testing.T) {
 		ForceAttemptHTTP2: true, // 上层是浏览器同构，默认允许 h2
 		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
 	}
-	res := RunDownload(context.Background(), tr, conc, 8<<20, 2*time.Second, nil)
+	res := RunDownload(context.Background(), tr, DownloadOpts{
+		Concurrency: conc,
+		BudgetBytes: 8 << 20,
+		Duration:    2 * time.Second,
+	})
 
 	if res.Status != StatusOK {
 		t.Fatalf("下载探针应成功，实际 status=%s error=%q evidence=%v", res.Status, res.Error, res.Evidence)
@@ -96,7 +100,11 @@ func TestDownloadFailsWithActionableDiagnosis(t *testing.T) {
 	}
 	defer func() { dlEndpoints = old }()
 
-	res := RunDownload(context.Background(), &http.Transport{}, 2, 1<<20, 500*time.Millisecond, nil)
+	res := RunDownload(context.Background(), &http.Transport{}, DownloadOpts{
+		Concurrency: 2,
+		BudgetBytes: 1 << 20,
+		Duration:    500 * time.Millisecond,
+	})
 
 	if res.Status != StatusFailed {
 		t.Fatalf("所有端点都连不上时必须判 failed，实际 status=%s error=%q", res.Status, res.Error)

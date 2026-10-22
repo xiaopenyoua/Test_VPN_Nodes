@@ -1,0 +1,60 @@
+{
+  "name": "proxylens-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ProxyLens 桌面外壳（Electron）",
+  "author": "ProxyLens",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "dev.proxylens.app",
+    "productName": "ProxyLens",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["arm64", "x64"]
+        }
+      ],
+      "extraResources": [
+        {
+          "from": "../dist",
+          "to": "bin",
+          "filter": ["proxylens-*-darwin-*"]
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "extraResources": [
+        {
+          "from": "../dist",
+          "to": "bin",
+          "filter": ["proxylens-*-windows-*.exe"]
+        }
+      ]
+    }
+  }
+}

@@ -134,6 +134,33 @@ html, body {
   border-radius: 2px; background: var(--warn-border);
 }
 
+/* 一级导航：总评 / 分评 是两个独立功能页 */
+.tabs {
+  display: flex; gap: var(--sp-1); margin-top: var(--sp-5);
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  appearance: none; border: 0; background: transparent; color: var(--text-2);
+  font-family: inherit; font-size: var(--fs-13); font-weight: 500;
+  padding: 10px 14px; cursor: pointer; position: relative;
+  transition: color var(--dur-1) var(--ease);
+}
+.tab:hover { color: var(--text); }
+.tab[aria-selected="true"] { color: var(--text); }
+.tab[aria-selected="true"]::after {
+  content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px;
+  border-radius: 2px; background: var(--brand);
+}
+.tab:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; border-radius: var(--r-sm); }
+.tab-panel[hidden] { display: none; }
+/* 单项复测提示：总评没被重算，这件事必须写在总评页上 */
+.summary-note {
+  margin-top: var(--sp-3); padding: 8px 10px; border-radius: var(--r-sm);
+  background: var(--info-bg); border-left: 2px solid var(--info-border);
+  color: var(--text-2); font-size: var(--fs-12); line-height: 1.6;
+}
+.probe-only-tag { margin-top: 6px; font-size: var(--fs-11); color: var(--info); font-family: var(--font-mono); }
+
 /* 结论卡 */
 .verdict {
   display: grid; grid-template-columns: 232px 1fr; gap: var(--sp-6); padding: var(--sp-6); margin-top: var(--sp-4);
@@ -335,6 +362,15 @@ details[open] > summary { margin-bottom: var(--sp-2); }
 
 .progress-track { height: 2px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: var(--sp-3); }
 .progress-track > i { display: block; height: 100%; background: var(--brand); transition: width var(--dur-2) var(--ease); }
+
+/* Electron 桌面外壳：hiddenInset 下红绿灯压在内容上，顶栏必须让出安全区 */
+[data-shell="electron"] .app-shell { padding-top: var(--titlebar-h); }
+/* vibrancy 需要页面底色半透明才能透出系统材质；卡片仍是不透明表面，保证可读性 */
+html[data-shell="electron"] { background: transparent; }
+html[data-shell="electron"] body { background: color-mix(in srgb, var(--bg) 78%, transparent); }
+[data-shell="electron"] .topbar { padding-left: 44px; -webkit-app-region: drag; }
+[data-shell="electron"] .topbar button,
+[data-shell="electron"] .topbar a { -webkit-app-region: no-drag; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }

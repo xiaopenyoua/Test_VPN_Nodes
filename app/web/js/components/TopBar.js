@@ -1,17 +1,22 @@
 import { h, svg } from '../core/dom.js';
 import { store } from '../core/store.js';
+import { applyTheme, saveTheme } from '../core/theme.js';
+
+// 三态循环：自动 → 亮色 → 暗色。自动跟随系统，显式选择优先。
+const THEME_LABEL = { auto: '◐ 自动', light: '☀ 亮色', dark: '☾ 暗色' };
+const THEME_NEXT = { auto: 'light', light: 'dark', dark: 'auto' };
 
 export function TopBar({ onSettings, onExport }) {
   const themeBtn = h('button', {
     class: 'btn btn-ghost btn-sm',
-    title: '切换明暗主题',
+    title: '切换主题：自动 / 亮色 / 暗色',
     onclick: () => {
-      const next = store.state.theme === 'dark' ? 'light' : 'dark';
-      document.documentElement.dataset.theme = next;
-      localStorage.setItem('proxylens.theme', next);
+      const next = THEME_NEXT[store.state.theme] || 'auto';
+      applyTheme(next);
+      saveTheme(next);
       store.patch({ theme: next });
     },
-  }, '◐ 主题');
+  }, THEME_LABEL[store.state.theme] || THEME_LABEL.auto);
 
   const exportBtn = h('button', {
     class: 'btn btn-sm',
@@ -42,6 +47,7 @@ export function TopBar({ onSettings, onExport }) {
     const has = !!store.state.summary;
     exportBtn.disabled = !has;
     exportBtn.title = has ? '导出本次探测报告（Markdown）' : '先完成一次探测才能导出';
+    themeBtn.textContent = THEME_LABEL[store.state.theme] || THEME_LABEL.auto;
   }
 
   render();

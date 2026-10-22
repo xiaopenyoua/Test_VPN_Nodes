@@ -54,6 +54,35 @@ func RunSite(ctx context.Context, tr *http.Transport, id string) *Result {
 	if id == "P3" || id == "P4" {
 		rounds = 3
 	}
+
+	// ── P3 出口地区层（口径参考 OpenClash 的 cdn-cgi/trace）────────────────
+	// 这一层只解释"为什么打不开"和"该换什么样的节点"，不负责下结论。
+	// 红线：地区层不能推翻可用层——"出口地区受支持"绝不等于"页面能打开"。
+	// 2026-10-22 本机就是活例：loc=SG、warp=on、OpenClash 口径判"解锁"，
+	// 而真浏览器打开 chatgpt.com 是 403。所以 loc / warp 只进证据链。
+	// P4 不做这一层：gemini.google.com 背后不是 Cloudflare，
+	// /cdn-cgi/trace 回的是 Google 的 404 页（实测），没有 loc 可读，不硬造。
+	var (
+		regionEv      []string
+		regionBlocked bool
+	)
+	if id == "P3" {
+		// 地区层是"补充"而不是主线，给它单独的时限：即便它整体超时，
+		// 也不能把预算吃光，页面 GET 才是结论来源。
+		rctx, rcancel := context.WithTimeout(ctx, 8*time.Second)
+		if loc, colo, warp, ok := FetchTrace(rctx, tr, "chatgpt.com"); ok {
+			res.Region, res.Colo, res.Warp = loc, colo, warp
+			regionEv = append(regionEv, traceEvidence(loc, colo, warp))
+		}
+		// 只有 OpenAI 自己说"这个地区不支持"才算硬证据。
+		// 放在页面 GET 之前，是为了在拿到硬证据时省掉后两轮没有意义的重试。
+		if blocked, ok := fetchOpenAIRegionVerdict(rctx, tr); ok && blocked {
+			regionBlocked = true
+			regionEv = append(regionEv, "OpenAI 自述：当前出口地区不受支持（compliance/cookie_requirements 返回 unsupported_country）")
+			rounds = 1
+		}
+		rcancel()
+	}
 	// 200KB 足以覆盖标题与首屏指纹（Gemini 首页约 800KB，标题在 96KB 之后）
 	const maxBody = 200 << 10
 
@@ -165,6 +194,38 @@ func RunSite(ctx context.Context, tr *http.Transport, id string) *Result {
 	res.Score = statusScore(worst)
 	res.Attribution = AttributionOf(worst, first.Err)
 	res.NextStep = NextStep(res.Attribution)
+
+	// ── 地区层收尾：先落证据，再决定能不能改结论 ──────────────────────────
+	// 证据排在最后一行：结论与 n/m 次分布比"为什么"更重要。
+	res.Evidence = append(res.Evidence, regionEv...)
+	if regionBlocked {
+		switch res.Status {
+		case StatusOK, StatusAuthRequired:
+			// 页面真的打开了，就必须如实报"能打开"——地区自述不能反过来把它推翻。
+			res.Evidence = append(res.Evidence, "但页面此刻确实能正常打开，以页面结果为准；地区自述与页面表现不一致，疑似灰度或缓存差异")
+		default:
+			// 反过来，页面明明打不开时，把原因落到"地区不受支持"才是对用户有用的解释：
+			// 这时"换地区"与"换节点"是同一个动作。
+			res.Status = StatusRegionBlock
+			res.Score = statusScore(StatusRegionBlock)
+			res.Headline = shortHeadline(StatusRegionBlock)
+			res.Attribution = AttrTarget
+			res.NextStep = NextStep(AttrTarget)
+			res.Evidence = append(res.Evidence, "页面确实打不开，与 OpenAI 自述的地区限制一致")
+		}
+	}
+
+	// warp=on 是独立于地区的病因，且它决定 NextStep 该说什么：出口是 Cloudflare
+	// 的共享 IP，OpenAI 按 IP 段拒（403 / Unable to load site），跟"地区名"无关。
+	// 不说清楚，用户会以为换个地区名就能好，然后在同一个节点上反复重试。
+	if res.Warp {
+		if res.Status != StatusOK && res.Status != StatusAuthRequired {
+			res.NextStep = warpNextStep()
+		} else {
+			// 页面此刻能开也不代表安全：WARP 出口是共享的，随时可能被按 IP 段拒掉。
+			res.Evidence = append(res.Evidence, "warp=on 属共享出口，OpenAI 随时可能按 IP 段拒绝；一旦出现 403，优先换非 WARP 节点，而不是重试")
+		}
+	}
 	return res
 }
 

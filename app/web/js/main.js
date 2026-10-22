@@ -1,16 +1,21 @@
 import { h, clear } from './core/dom.js';
 import { store, resetForRun } from './core/store.js';
 import { api } from './core/api.js';
+import { applyTheme, watchSystemTheme } from './core/theme.js';
 import { TopBar } from './components/TopBar.js';
 import { ControlPanel } from './components/ControlPanel.js';
 import { VerdictPanelFactory } from './components/VerdictPanel.js';
 import { ProbeGrid } from './components/ProbeGrid.js';
 import { DetailDrawer } from './components/DetailDrawer.js';
 import { SettingsSheet } from './components/SettingsSheet.js';
+import { Tabs } from './components/Tabs.js';
 import { toast } from './components/Toast.js';
 
 const root = document.getElementById('app');
-document.documentElement.dataset.theme = store.state.theme;
+applyTheme(store.state.theme);
+watchSystemTheme(() => {
+  if (store.state.theme === 'auto') applyTheme('auto');
+});
 
 function exportReport(format) {
   if (!store.state.summary) {
@@ -24,10 +29,28 @@ const topbar = TopBar({ onSettings: () => openSettings(), onExport: exportReport
 // 注意：TopBar 返回 { el, render }，下方统一用 topbar.el 挂载
 const control = ControlPanel({ onRun: startRun, onCancel: cancelRun });
 const verdict = VerdictPanelFactory({ onExport: exportReport });
-const grid = ProbeGrid({ onOpen: (id) => openDetail(id) });
+const grid = ProbeGrid({ onOpen: (id) => openDetail(id), onProbeOnly: (id) => probeOnly(id) });
 
 const metaLine = h('div', { class: 'section-title' }, '探测项');
 const runClock = h('div', { class: 'section-title', style: 'font-family:var(--font-mono)' }, '');
+
+// 总评与分评是两个独立功能页：总评回答「整体怎么样」，分评回答「每一项现在怎么样」。
+const tabs = Tabs({
+  items: [{ key: 'verdict', label: '总评' }, { key: 'probes', label: '分评' }],
+  value: store.state.tab,
+  onChange: (k) => store.patch({ tab: k }),
+});
+
+// 单项复测不重算总评，但必须在总评页说清楚，否则用户会以为总评被刷新了
+const summaryNote = h('div', { class: 'summary-note', hidden: true });
+const verdictPanel = h('div', { class: 'tab-panel', role: 'tabpanel', 'aria-label': '总评' },
+  verdict.el,
+  summaryNote,
+);
+const probesPanel = h('div', { class: 'tab-panel', role: 'tabpanel', 'aria-label': '分评' },
+  h('div', { class: 'section-head' }, metaLine, runClock),
+  grid.el,
+);
 
 const footer = h('footer', { class: 'footer' },
   h('span', {}, 'ProxyLens · 本地运行 · 数据不外传'),
@@ -38,9 +61,9 @@ const footer = h('footer', { class: 'footer' },
 clear(root);
 root.appendChild(topbar.el);
 root.appendChild(control.el);
-root.appendChild(verdict.el);
-root.appendChild(h('div', { class: 'section-head' }, metaLine, runClock));
-root.appendChild(grid.el);
+root.appendChild(tabs.el);
+root.appendChild(verdictPanel);
+root.appendChild(probesPanel);
 root.appendChild(footer);
 
 let drawer = null;
@@ -76,10 +99,26 @@ function closeSettings() {
 async function startRun(cfg) {
   try {
     resetForRun(cfg, store.state.exit);
+    store.patch({ tab: 'probes' });
     const res = await api.run(cfg);
     store.patch({ runId: res.runId });
   } catch (err) {
     store.patch({ phase: 'error', error: err.message });
+    toast(err.message, 'error');
+  }
+}
+
+// 单项复测：只跑这一项，保留其它卡的结果，也不动总评。
+async function probeOnly(id) {
+  const st = store.state;
+  if (st.phase === 'running') return;
+  const prevPhase = st.phase;
+  try {
+    store.patch({ phase: 'running', onlyId: id, startedAt: Date.now(), error: '', tab: 'probes' });
+    const res = await api.run({ ...st.config, probes: [id], only: true });
+    store.patch({ runId: res.runId });
+  } catch (err) {
+    store.patch({ phase: prevPhase, onlyId: null });
     toast(err.message, 'error');
   }
 }
@@ -108,6 +147,19 @@ function renderVerdict(state) {
   verdict.render(state);
 }
 
+function renderTabs(state) {
+  tabs.render(state.tab);
+  const onVerdict = state.tab === 'verdict';
+  verdictPanel.hidden = !onVerdict;
+  probesPanel.hidden = onVerdict;
+
+  const retested = (state.results || []).filter((r) => r.only);
+  summaryNote.hidden = retested.length === 0;
+  if (retested.length) {
+    summaryNote.textContent = `分评中有 ${retested.length} 项单项复测（${retested.map((r) => r.id).join('、')}），总评仍来自上一次完整探测，未重算。`;
+  }
+}
+
 store.subscribe((state) => {
   if (state.phase !== lastPhase) {
     lastPhase = state.phase;
@@ -115,6 +167,7 @@ store.subscribe((state) => {
     topbar.render();
   }
   renderVerdict(state);
+  renderTabs(state);
   grid.render(state);
   if (drawer && state.detailId) {
     const r = state.results.find((x) => x.id === state.detailId);
@@ -138,18 +191,30 @@ let es = null;
 function bindStream() {
   es = api.subscribe({
     snapshot: (st) => {
-      store.patch({
+      const patch = {
         phase: st.running ? 'running' : (st.summary ? 'done' : 'idle'),
-        config: { ...store.state.config, ...(st.config || {}) },
         exit: st.exit || null,
         env: st.env || null,
         results: st.results || [],
         summary: st.summary || null,
-      });
+        onlyId: st.running && st.only ? ((st.config && st.config.probes && st.config.probes[0]) || null) : null,
+      };
+      // 单项复测的 config 只含一个探测项，不能覆盖用户当前的完整配置
+      if (!st.only) patch.config = { ...store.state.config, ...(st.config || {}) };
+      store.patch(patch);
     },
     run_start: (p) => {
+      if (p.only) {
+        store.patch({
+          phase: 'running',
+          onlyId: (p.config && p.config.probes && p.config.probes[0]) || null,
+          startedAt: Date.now(),
+          tab: 'probes',
+        });
+        return;
+      }
       resetForRun(p.config, p.exit);
-      store.patch({ env: p.env });
+      store.patch({ env: p.env, tab: 'probes' });
     },
     probe_start: (p) => {
       store.upsertResult({ id: p.id, name: p.name, group: p.group, status: 'running', headline: '探测中…', subline: '', phases: {}, samples: [] });
@@ -165,6 +230,9 @@ function bindStream() {
     run_end: (p) => store.patch({
       phase: p.status === 'cancelled' ? 'cancelled' : 'done',
       elapsedMs: p.elapsedMs,
+      onlyId: null,
+      // 单项复测留在分评页看结果；完整运行结束后回到总评
+      tab: p.only ? 'probes' : 'verdict',
     }),
     error: (p) => {
       store.patch({ error: p.message || '运行异常' });
@@ -192,20 +260,23 @@ document.addEventListener('keydown', (e) => {
 (async () => {
   try {
     const st = await api.state();
-    store.patch({
+    const patch = {
       phase: st.running ? 'running' : (st.summary ? 'done' : 'idle'),
-      config: { ...store.state.config, ...(st.config || {}) },
       exit: st.exit || null,
       env: st.env || null,
       results: st.results || [],
       summary: st.summary || null,
-    });
+      onlyId: st.running && st.only ? ((st.config && st.config.probes && st.config.probes[0]) || null) : null,
+    };
+    if (!st.only) patch.config = { ...store.state.config, ...(st.config || {}) };
+    store.patch(patch);
   } catch (err) {
     toast('初始化失败：' + err.message, 'error');
   }
   bindStream();
   const st = store.state;
   renderVerdict(st);
+  renderTabs(st);
   grid.render(st);
   control.render();
   topbar.render();

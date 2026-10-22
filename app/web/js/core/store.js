@@ -1,7 +1,9 @@
 // 单一状态源：只做浅合并 + 订阅通知，避免引入框架。
 const initial = {
   phase: 'idle', // idle | running | done | cancelled | error
-  config: { mode: 'system', proxyUrl: '', preset: 'quick', concurrency: 1, budgetMb: 20, durationSec: 8, timeoutSec: 15 },
+  // longRun 打开后由后端（config.Normalize）把时长/流量/并发收敛成长跑口径；
+  // 前端也会同步写入，保证「关掉开关能回到短测参数」有据可依。
+  config: { mode: 'system', proxyUrl: '', preset: 'quick', concurrency: 1, budgetMb: 20, durationSec: 8, timeoutSec: 15, longRun: false },
   exit: null,
   env: null,
   results: [],
@@ -11,7 +13,11 @@ const initial = {
   elapsedMs: 0,
   error: '',
   detailId: null,
-  theme: localStorage.getItem('proxylens.theme') || 'dark',
+  // 总评与分评是两个独立功能页：总评来自一次完整运行，分评展示每一项的当前结果
+  tab: 'verdict',
+  // 正在单项复测的探测项 ID；null 表示没有单项复测在跑
+  onlyId: null,
+  theme: localStorage.getItem('proxylens.theme') || 'auto',
   streamOk: true,
 };
 
@@ -59,6 +65,7 @@ export function resetForRun(cfg, exit) {
     summary: null,
     error: '',
     detailId: null,
+    onlyId: null,
     startedAt: Date.now(),
     elapsedMs: 0,
   });

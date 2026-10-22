@@ -7,6 +7,22 @@
   <title>ProxyLens · 代理能力探测</title>
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/css/ui.css" />
+  <script>
+    // 首帧前定主题，避免先画深色再闪成亮色。
+    // auto 跟随系统；显式选择优先于系统偏好。
+    (function () {
+      var pref = localStorage.getItem('proxylens.theme') || 'auto';
+      var dark = pref === 'dark' ||
+        (pref === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      var root = document.documentElement;
+      root.dataset.theme = dark ? 'dark' : 'light';
+      root.dataset.themePref = pref;
+      // 桌面外壳通过 ?shell=electron 告知页面：需要给红绿灯让出标题栏安全区
+      if (new URLSearchParams(location.search).get('shell') === 'electron') {
+        root.dataset.shell = 'electron';
+      }
+    })();
+  </script>
 </head>
 <body>
   <div id="app" class="app-shell">

@@ -51,6 +51,17 @@ export const fmt = {
     const s = Math.floor(ms / 1000);
     return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
   },
+  // 长跑场景说的是人话时长（"3分12秒"），clock 的 00:03:12 是仪表盘语言，读起来要先换算
+  dur: (ms) => {
+    const total = Math.max(0, Math.floor((ms || 0) / 1000));
+    const m = Math.floor(total / 60);
+    const s = total % 60;
+    if (!m) return `${s}秒`;
+    if (!s) return `${m}分`;
+    return `${m}分${s}秒`;
+  },
+  // 流量预估按 MB 报数：超过 1 GB 才进位，避免"1024 MB"和"1 GB"两套说法在界面上打架
+  traffic: (mb) => (mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`),
 };
 
 export function debounce(fn, wait = 200) {

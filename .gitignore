@@ -1,3 +1,5 @@
 .vscode
 *.exe
 .DS_Store
+app/desktop/node_modules
+app/desktop/release

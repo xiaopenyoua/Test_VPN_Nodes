@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"embed"
 	"encoding/hex"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -30,9 +31,15 @@ func main() {
 		port   = flag.Int("port", 0, "监听端口，0 表示自动分配")
 		noOpen = flag.Bool("no-open", false, "不自动打开浏览器")
 		addr   = flag.String("addr", "127.0.0.1", "监听地址，出于安全考虑仅建议 127.0.0.1")
+		// emitReady 给桌面外壳（Electron）用：起来后打一行机器可读的 JSON 到 stdout，
+		// 外壳据此拿到真实端口与 token。不这么做就只能去正则匹配人类可读日志，
+		// 一次改文案就把启动流程弄断。
+		emitReady = flag.Bool("emit-ready", false, "启动就绪后向 stdout 输出一行 JSON（供桌面外壳解析）")
 	)
 	flag.Parse()
 
+	// 只允许绑定回环。这个工具能在用户机器上对外发起真实请求并消耗带宽，
+	// 绑到 0.0.0.0 等于把它变成局域网里的开放探测跳板。
 	if *addr != "127.0.0.1" && *addr != "localhost" {
 		fmt.Fprintln(os.Stderr, "安全限制：仅允许绑定 127.0.0.1，避免把本地探测能力暴露到局域网")
 		os.Exit(2)
@@ -55,10 +62,22 @@ func main() {
 	actual := ln.Addr().(*net.TCPAddr).Port
 	url := fmt.Sprintf("http://127.0.0.1:%d/?t=%s", actual, srv.Token())
 
-	fmt.Printf("\n  ProxyLens %s  ·  %s/%s\n", engine.Version, runtime.GOOS, runtime.GOARCH)
-	fmt.Printf("  ➜  %s\n", url)
-	fmt.Println("  按 Ctrl+C 退出")
-	fmt.Println()
+	if *emitReady {
+		// 单行 JSON，外壳按行读取即可；不要换行美化，否则读取端要多写一层拼包逻辑。
+		line, _ := json.Marshal(map[string]any{
+			"url":     url,
+			"port":    actual,
+			"token":   srv.Token(),
+			"version": engine.Version,
+		})
+		fmt.Println("PROXYLENS_READY " + string(line))
+		// 机器模式下不打花哨 banner：外壳的 stdout 只应出现可解析的行
+	} else {
+		fmt.Printf("\n  ProxyLens %s  ·  %s/%s\n", engine.Version, runtime.GOOS, runtime.GOARCH)
+		fmt.Printf("  ➜  %s\n", url)
+		fmt.Println("  按 Ctrl+C 退出")
+		fmt.Println()
+	}
 
 	if !*noOpen {
 		go func() {

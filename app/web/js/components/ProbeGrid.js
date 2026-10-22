@@ -4,13 +4,15 @@ import { ProbeCard } from './ProbeCard.js';
 const ORDER = ['P3', 'P4', 'P5', 'P6', 'P2', 'P1'];
 
 // 探测卡网格：按 ID 复用实例，只更新变化的卡片。
-export function ProbeGrid({ onOpen }) {
+export function ProbeGrid({ onOpen, onProbeOnly }) {
   const el = h('div', { class: 'probe-grid' });
   const cards = new Map();
 
   function render(state) {
     const running = state.phase === 'running';
     const results = state.results || [];
+    // busyId 让「只测这项」按钮知道哪张卡正在复测，其余卡在复测期间禁用
+    const opts = { running, busyId: state.onlyId };
     const ids = ORDER.filter((id) => results.some((r) => r.id === id) || running);
 
     // 初始态：给 6 张"预告卡"说明将测什么，而不是留一片空白。
@@ -36,9 +38,9 @@ export function ProbeGrid({ onOpen }) {
     if (results.length === 0 && running) {
       clear(el); cards.clear();
       for (const id of ORDER) {
-        const card = ProbeCard({ onOpen });
+        const card = ProbeCard({ onOpen, onProbeOnly });
         cards.set(id, card);
-        card.update({ id, name: nameOf(id), status: 'pending', headline: '—', phases: {} });
+        card.update({ id, name: nameOf(id), status: 'pending', headline: '—', phases: {} }, opts);
         el.appendChild(card.el);
       }
       return;
@@ -47,12 +49,12 @@ export function ProbeGrid({ onOpen }) {
     for (const id of ids) {
       let card = cards.get(id);
       if (!card) {
-        card = ProbeCard({ onOpen });
+        card = ProbeCard({ onOpen, onProbeOnly });
         cards.set(id, card);
         el.appendChild(card.el);
       }
       const r = results.find((x) => x.id === id);
-      if (r) card.update(r);
+      if (r) card.update(r, opts);
     }
     // 移除不在当前结果里的卡
     for (const [id, card] of cards) {

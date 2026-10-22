@@ -44,6 +44,17 @@ type Config struct {
 	DurationSec int      `json:"durationSec"`
 	TimeoutSec  int      `json:"timeoutSec"`
 	Probes      []string `json:"probes"`
+
+	// LongRun 打开 P1 的长时稳定性长跑（最长 30 分钟）。
+	// 用户报的「好多节点只能下载一会儿、几十秒就不行了」在短测里根本看不出来：
+	// 20 秒的均值会把「前 10 秒跑满、后 10 秒停摆」摊成一个还看得过去的数字。
+	// 长跑才需要按窗口切分去看吞吐是不是一直在出数据。
+	LongRun bool `json:"longRun"`
+
+	// Only 表示这是一次「单项复测」：只跑 Probes 里的那一项，
+	// 保留其它探测项的既有结果，也不重算总评。
+	// 总评代表一次完整运行；把不同时间窗口的结果混算在一起无法归因。
+	Only bool `json:"only"`
 }
 
 // Normalize 填充默认值并做范围收敛。
@@ -64,17 +75,38 @@ func (c *Config) Normalize() {
 	if c.Concurrency > 16 {
 		c.Concurrency = 16
 	}
+	// 长跑档的"留空即按长跑取值"必须放在通用默认值之前。
+	// 否则 DurationSec 会先被档位默认值（8/15/30 秒）填掉，
+	// 用户勾了「长时稳定性测试」却只跑了 30 秒，指标面板上会多出一堆 0 窗口，
+	// 看起来像"节点断了"，其实是配置没生效。
+	if c.LongRun {
+		if c.DurationSec <= 0 {
+			c.DurationSec = 1800
+		}
+		if c.BudgetMB <= 0 {
+			// 30 分钟 × 峰值算不出的情况下，先按 ~4.5 Mbps 的持续吞吐给出 1 GB 上限：
+			// 够跑满 30 分钟不提前截断，又不会把用户的流量套餐当垃圾桶。
+			c.BudgetMB = 1024
+		}
+		if c.Concurrency <= 0 {
+			// 长跑测的是"单条流的持续性"，不是峰值带宽。
+			// 多流并发时只要有一条流断，总吞吐就会被其它流掩盖，断流反而更难被发现。
+			c.Concurrency = 1
+		}
+	}
 	if c.BudgetMB <= 0 {
 		c.BudgetMB = def.budgetMB
 	}
-	if c.BudgetMB > 512 {
-		c.BudgetMB = 512
+	if c.BudgetMB > 4096 {
+		c.BudgetMB = 4096
 	}
 	if c.DurationSec <= 0 {
 		c.DurationSec = def.durationSec
 	}
-	if c.DurationSec > 120 {
-		c.DurationSec = 120
+	// 上限 1800 秒（30 分钟）：长跑需要足够长才能暴露"几十秒后断流"。
+	// 再长没有意义——超过 30 分钟的测试用户不会等，而且流量成本不可控。
+	if c.DurationSec > 1800 {
+		c.DurationSec = 1800
 	}
 	if c.TimeoutSec <= 0 {
 		c.TimeoutSec = def.timeoutSec

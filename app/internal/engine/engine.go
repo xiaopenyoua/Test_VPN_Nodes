@@ -47,6 +47,9 @@ type State struct {
 	Summary   *score.Summary  `json:"summary"`
 	Error     string          `json:"error"`
 	ElapsedMs float64         `json:"elapsedMs"`
+	// Only 表示当前（或最近一次）运行是单项复测：结果只替换对应那一项，
+	// 总评保持上一次完整运行的值。
+	Only bool `json:"only"`
 }
 
 // Engine 持有运行状态与订阅者。
@@ -140,6 +143,9 @@ func (e *Engine) Start(cfg config.Config) (string, error) {
 	if err := cfg.Validate(); err != nil {
 		return "", err
 	}
+	if cfg.Only && len(cfg.Probes) != 1 {
+		return "", errors.New("单项复测必须且只能指定一个探测项")
+	}
 	e.mu.Lock()
 	if e.running {
 		e.mu.Unlock()
@@ -160,6 +166,12 @@ func (e *Engine) Start(cfg config.Config) (string, error) {
 		Exit:      exit,
 		Env:       Env(),
 		Results:   []*probe.Result{},
+		Only:      cfg.Only,
+	}
+	// 单项复测：沿用上一轮的其它结果与总评，只替换被复测的那一项。
+	if cfg.Only && e.state != nil {
+		st.Results = append([]*probe.Result{}, e.state.Results...)
+		st.Summary = e.state.Summary
 	}
 	e.state = st
 	e.cancel = cancel
@@ -181,23 +193,42 @@ func (e *Engine) execute(ctx context.Context, st *State) {
 		e.mu.Unlock()
 	}()
 
+	only := st.Config.Only
 	e.broadcast("run_start", map[string]interface{}{
 		"runId":  st.RunID,
 		"config": st.Config,
 		"exit":   st.Exit,
 		"env":    st.Env,
+		"only":   only,
 	})
 
 	results := make([]*probe.Result, 0, len(st.Config.Probes))
+	if only {
+		results = append(results, st.Results...)
+	}
 	var resMu sync.Mutex
+
+	// 单项复测时替换同 ID 的旧结果，而不是追加——否则其它 5 项会被抹掉。
+	replaceOrAppend := func(list []*probe.Result, r *probe.Result) []*probe.Result {
+		if only {
+			for i, old := range list {
+				if old.ID == r.ID {
+					list[i] = r
+					return list
+				}
+			}
+		}
+		return append(list, r)
+	}
 
 	runOne := func(id string) {
 		r := e.runProbe(ctx, st.Exit, id, st.Config)
+		r.Only = only
 		resMu.Lock()
-		results = append(results, r)
+		results = replaceOrAppend(results, r)
 		resMu.Unlock()
 		e.mu.Lock()
-		st.Results = append(st.Results, r)
+		st.Results = replaceOrAppend(st.Results, r)
 		e.mu.Unlock()
 		e.broadcast("probe_result", r)
 	}
@@ -275,6 +306,10 @@ func (e *Engine) execute(ctx context.Context, st *State) {
 	e.mu.Lock()
 	st.Results = ordered
 	switch {
+	case only:
+		// 单项复测不重算总评：总评代表一次完整运行，
+		// 把不同时间窗口的结果混算在一起无法归因。
+		e.mu.Unlock()
 	case ctx.Err() != nil:
 		st.Summary = nil
 		st.Error = ""
@@ -301,6 +336,7 @@ func (e *Engine) execute(ctx context.Context, st *State) {
 		"runId":     st.RunID,
 		"status":    status,
 		"elapsedMs": probe.Round(float64(time.Since(started).Microseconds())/1000, 0),
+		"only":      only,
 	})
 }
 
@@ -326,11 +362,23 @@ func (e *Engine) runProbe(ctx context.Context, exit netx.Settings, id string, cf
 		return probe.RunYouTube(pctx, tr, 2<<20)
 	case config.ProbeGoogle:
 		dur := time.Duration(cfg.DurationSec) * time.Second
-		// 下载需要更长的独立预算，不受单 probe 超时限制
+		// 下载需要更长的独立预算，不受单 probe 超时限制。
+		// 这里的 ctx 直接挂在根 ctx 上（不是那个被 TimeoutSec 卡住的 pctx），
+		// 所以「只跑 P1 + longRun」时，跑满 1800 秒不会被别的探测项的超时预算打断。
+		// 额外 +20s 是留给最后一个 Range 请求收尾的余量，不是固定值——
+		// 若写死 20s，长跑会被自己的外层 ctx 在 20 秒时整条掐掉。
 		dctx, dcancel := context.WithTimeout(ctx, dur+20*time.Second)
 		defer dcancel()
-		return probe.RunDownload(dctx, tr, cfg.Concurrency, int64(cfg.BudgetMB)<<20, dur, func(s probe.Sample) {
-			e.broadcast("sample", map[string]interface{}{"id": config.ProbeGoogle, "sample": s})
+		return probe.RunDownload(dctx, tr, probe.DownloadOpts{
+			Concurrency: cfg.Concurrency,
+			BudgetBytes: int64(cfg.BudgetMB) << 20,
+			Duration:    dur,
+			// 长跑开关必须一路传到探针：漏传的话配置里勾了「长时稳定性」，
+			// 探测仍按短测口径出结论，用户等于没勾。
+			LongRun: cfg.LongRun,
+			OnSample: func(s probe.Sample) {
+				e.broadcast("sample", map[string]interface{}{"id": config.ProbeGoogle, "sample": s})
+			},
 		})
 	default:
 		return &probe.Result{ID: id, Name: m.Name, Group: m.Group, Status: probe.StatusSkipped, Headline: "未知探测项", Samples: []probe.Sample{}}
