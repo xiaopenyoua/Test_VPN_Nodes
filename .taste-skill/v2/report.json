@@ -1,0 +1,1678 @@
+{
+ "url": "design/v2/index.html",
+ "at": "2026-10-23T02:29:40.757Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 2,
+   "filled": [
+    0.22,
+    0.31
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 969,
+     "screens": 1.1,
+     "words": 177,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 2,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 15,
+     "vw": 1,
+     "font": "-apple-system",
+     "weight": 600,
+     "tracking": -0.01,
+     "leading": 1.5,
+     "top": 13,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "总评",
+     "words": 1,
+     "lines": 1,
+     "size": 15,
+     "font": "-apple-system"
+    },
+    "headings": [
+     {
+      "text": "59",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 64,
+      "vw": 4.4,
+      "font": "-apple-system",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 0.92,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.05,
+      "top": 108,
+      "tag": "span",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "-apple-system",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      11,
+      12,
+      13,
+      15,
+      17,
+      26,
+      64
+     ],
+     "sizeCount": 7,
+     "notLoaded": [],
+     "body": {
+      "font": "-apple-system",
+      "size": 13,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": -0.004,
+      "contrast": 6.6
+     },
+     "measureChars": 88,
+     "max": {
+      "size": 64,
+      "vw": 4.4,
+      "font": "-apple-system",
+      "text": "59"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.06,
+     "centerShare": 0.03,
+     "smallText": 12
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#1c1c1e",
+     "bodyBgHsl": {
+      "h": 240,
+      "s": 0.03,
+      "l": 0.11
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#1c1c1e",
+       "top": 0,
+       "hsl": {
+        "h": 240,
+        "s": 0.03,
+        "l": 0.11
+       }
+      },
+      {
+       "color": "#131315",
+       "top": 60,
+       "hsl": {
+        "h": 240,
+        "s": 0.05,
+        "l": 0.08
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#8e8e93",
+       "share": 0.45
+      },
+      {
+       "color": "#f5f5f7",
+       "share": 0.33
+      },
+      {
+       "color": "#a1a1a6",
+       "share": 0.17
+      },
+      {
+       "color": "#30d158",
+       "share": 0.02
+      },
+      {
+       "color": "#ff453a",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#3a3a3e",
+      "hsl": {
+       "h": 240,
+       "s": 0.03,
+       "l": 0.24
+      },
+      "fg": "#f5f5f7"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 2,
+     "inHero": 2,
+     "radius": 7,
+     "height": 30,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "总评",
+      "导出报告"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 5,
+     "hairlineSamples": [
+      "div.row 1148px",
+      "div.row 1148px",
+      "div.row 1148px",
+      "div.row 1148px",
+      "div.row 1148px"
+     ],
+     "outlinedBoxes": 6,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 6,
+     "boxRadius": 10,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 3,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 367
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 94,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 969,
+    "margins": {
+     "left": 12,
+     "right": 33
+    },
+    "sections": [
+     {
+      "sel": "div.verdict",
+      "tag": "div",
+      "top": 85,
+      "height": 260,
+      "words": 38,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "59",
+       "size": 64,
+       "tag": "span"
+      },
+      "left": 278,
+      "right": 54,
+      "textLeft": 278,
+      "textRight": 439,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.dims",
+      "tag": "div",
+      "top": 367,
+      "height": 123,
+      "words": 35,
+      "media": 0,
+      "middle": 98,
+      "heading": {
+       "text": "46",
+       "size": 26,
+       "tag": "div"
+      },
+      "left": 274,
+      "right": 50,
+      "textLeft": 274,
+      "textRight": 50,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.block",
+      "tag": "div",
+      "top": 512,
+      "height": 308,
+      "words": 75,
+      "media": 0,
+      "middle": 470,
+      "heading": {
+       "text": "逐项证据",
+       "size": 13,
+       "tag": "h3"
+      },
+      "left": 257,
+      "right": 33,
+      "textLeft": 257,
+      "textRight": 33,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "总评",
+      "size": 15,
+      "top": 13,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 252,
+      "n": 1
+     },
+     {
+      "x": 434,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 2,
+    "bodySize": 13,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0.13,
+    "voidBox": {
+     "x": 0,
+     "y": 180,
+     "w": 240,
+     "h": 720
+    }
+   },
+   "app": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "dark": true,
+    "ground": "#1c1c1e",
+    "sidebar": {
+     "w": 232,
+     "tag": "aside",
+     "links": 6,
+     "share": 0.16
+    },
+    "topbar": null,
+    "canvas": {
+     "left": 20,
+     "right": 33
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 15,
+     "vw": 1,
+     "font": "-apple-system",
+     "weight": 600,
+     "tracking": -0.01,
+     "leading": 1.5,
+     "top": 13,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 1,
+     "firstScreen": 1,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 6,
+     "radii": [
+      [
+       10,
+       5
+      ],
+      [
+       12,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 9,
+     "tabularShare": 1,
+     "kpiMax": 64
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.32,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      13,
+      15,
+      17,
+      26,
+      64
+     ]
+    },
+    "title": {
+     "text": "总评",
+     "size": 15,
+     "top": 13
+    },
+    "colourShare": 0.01
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.44
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 1024,
+     "screens": 1,
+     "words": 175,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 2,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 15,
+     "vw": 2,
+     "font": "-apple-system",
+     "weight": 600,
+     "tracking": -0.01,
+     "leading": 1.5,
+     "top": 59,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "总评",
+     "words": 1,
+     "lines": 1,
+     "size": 15,
+     "font": "-apple-system"
+    },
+    "headings": [
+     {
+      "text": "59",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 56,
+      "vw": 7.3,
+      "font": "-apple-system",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 0.92,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.09,
+      "top": 145,
+      "tag": "span",
+      "kind": "heading"
+     },
+     {
+      "text": "46",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 26,
+      "vw": 3.4,
+      "font": "-apple-system",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.26,
+      "top": 444,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "91",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 26,
+      "vw": 3.4,
+      "font": "-apple-system",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.26,
+      "top": 444,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "43",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 26,
+      "vw": 3.4,
+      "font": "-apple-system",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.26,
+      "top": 444,
+      "tag": "div",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 4,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 1,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "-apple-system",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      11,
+      12,
+      13,
+      15,
+      17,
+      26,
+      56
+     ],
+     "sizeCount": 7,
+     "notLoaded": [],
+     "body": {
+      "font": "-apple-system",
+      "size": 13,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": -0.004,
+      "contrast": 6.6
+     },
+     "measureChars": 82,
+     "max": {
+      "size": 56,
+      "vw": 7.3,
+      "font": "-apple-system",
+      "text": "59"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.06,
+     "centerShare": 0.03,
+     "smallText": 12
+    },
+    "eyebrows": [
+     {
+      "text": "速度",
+      "above": "46",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12.5,
+      "top": 417
+     },
+     {
+      "text": "稳定性",
+      "above": "91",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12.5,
+      "top": 417
+     },
+     {
+      "text": "AI 可用性",
+      "above": "43",
+      "upper": true,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12.5,
+      "top": 417
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#1c1c1e",
+     "bodyBgHsl": {
+      "h": 240,
+      "s": 0.03,
+      "l": 0.11
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#1c1c1e",
+       "top": 0,
+       "hsl": {
+        "h": 240,
+        "s": 0.03,
+        "l": 0.11
+       }
+      },
+      {
+       "color": "#131315",
+       "top": 103,
+       "hsl": {
+        "h": 240,
+        "s": 0.05,
+        "l": 0.08
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#8e8e93",
+       "share": 0.44
+      },
+      {
+       "color": "#f5f5f7",
+       "share": 0.33
+      },
+      {
+       "color": "#a1a1a6",
+       "share": 0.18
+      },
+      {
+       "color": "#30d158",
+       "share": 0.02
+      },
+      {
+       "color": "#ff453a",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#0a6fd8",
+      "hsl": {
+       "h": 211,
+       "s": 0.91,
+       "l": 0.44
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 2,
+     "inHero": 2,
+     "radius": 7,
+     "height": 28,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "导出报告",
+      "› 系统代理 · 快速档 · 6 项 · 用时 9.8s 修改探测条件"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 6,
+     "hairlineSamples": [
+      "aside.sidebar 768px",
+      "div.row 712px",
+      "div.row 712px",
+      "div.row 712px",
+      "div.row 712px"
+     ],
+     "outlinedBoxes": 6,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 6,
+     "boxRadius": 10,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 3,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 402
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 28,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 1024,
+    "margins": {
+     "left": 27,
+     "right": 25
+    },
+    "sections": [
+     {
+      "sel": "div.verdict",
+      "tag": "div",
+      "top": 122,
+      "height": 258,
+      "words": 38,
+      "media": 0,
+      "middle": 3,
+      "heading": {
+       "text": "59",
+       "size": 56,
+       "tag": "span"
+      },
+      "left": 48,
+      "right": 48,
+      "textLeft": 48,
+      "textRight": 62,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.dims",
+      "tag": "div",
+      "top": 402,
+      "height": 141,
+      "words": 35,
+      "media": 0,
+      "middle": 46,
+      "heading": {
+       "text": "46",
+       "size": 26,
+       "tag": "div"
+      },
+      "left": 44,
+      "right": 44,
+      "textLeft": 44,
+      "textRight": 44,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.block",
+      "tag": "div",
+      "top": 565,
+      "height": 308,
+      "words": 75,
+      "media": 0,
+      "middle": 83,
+      "heading": {
+       "text": "逐项证据",
+       "size": 13,
+       "tag": "h3"
+      },
+      "left": 27,
+      "right": 27,
+      "textLeft": 27,
+      "textRight": 27,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "总评",
+      "size": 15,
+      "top": 59,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 18,
+      "n": 1
+     },
+     {
+      "x": 184,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 2,
+    "bodySize": 13,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "dark": true,
+    "ground": "#1c1c1e",
+    "sidebar": null,
+    "topbar": {
+     "h": 49
+    },
+    "canvas": {
+     "left": 18,
+     "right": 18
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 15,
+     "vw": 2,
+     "font": "-apple-system",
+     "weight": 600,
+     "tracking": -0.01,
+     "leading": 1.5,
+     "top": 59,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 1,
+     "firstScreen": 1,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 6,
+     "radii": [
+      [
+       10,
+       5
+      ],
+      [
+       12,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 9,
+     "tabularShare": 1,
+     "kpiMax": 56
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.32,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      13,
+      15,
+      17,
+      26,
+      56
+     ]
+    },
+    "title": {
+     "text": "总评",
+     "size": 15,
+     "top": 59
+    },
+    "colourShare": 0.012
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.3
+   ],
+   "motion": {
+    "elements": 2,
+    "css": 0,
+    "transitions": 2,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 844,
+     "screens": 1,
+     "words": 173,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 2,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 14,
+     "vw": 3.6,
+     "font": "-apple-system",
+     "weight": 600,
+     "tracking": -0.01,
+     "leading": 1.5,
+     "top": 66,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "总评",
+     "words": 1,
+     "lines": 1,
+     "size": 14,
+     "font": "-apple-system"
+    },
+    "headings": [
+     {
+      "text": "59",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 48,
+      "vw": 12.3,
+      "font": "-apple-system",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 0.92,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.15,
+      "top": 130,
+      "tag": "span",
+      "kind": "heading"
+     },
+     {
+      "text": "46",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "-apple-system",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.81,
+      "top": 549,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "91",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "-apple-system",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.81,
+      "top": 682,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "43",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "-apple-system",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.81,
+      "top": 814,
+      "tag": "div",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 4,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 1,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "-apple-system",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      26,
+      48
+     ],
+     "sizeCount": 8,
+     "notLoaded": [],
+     "body": {
+      "font": "-apple-system",
+      "size": 13,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": -0.004,
+      "contrast": 6.6
+     },
+     "measureChars": 49,
+     "max": {
+      "size": 48,
+      "vw": 12.3,
+      "font": "-apple-system",
+      "text": "59"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.06,
+     "centerShare": 0.03,
+     "smallText": 12
+    },
+    "eyebrows": [
+     {
+      "text": "速度",
+      "above": "46",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12.5,
+      "top": 522
+     },
+     {
+      "text": "稳定性",
+      "above": "91",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12.5,
+      "top": 655
+     },
+     {
+      "text": "AI 可用性",
+      "above": "43",
+      "upper": true,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12.5,
+      "top": 787
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#1c1c1e",
+     "bodyBgHsl": {
+      "h": 240,
+      "s": 0.03,
+      "l": 0.11
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#1c1c1e",
+       "top": 0,
+       "hsl": {
+        "h": 240,
+        "s": 0.03,
+        "l": 0.11
+       }
+      },
+      {
+       "color": "#131315",
+       "top": 97,
+       "hsl": {
+        "h": 240,
+        "s": 0.05,
+        "l": 0.08
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#8e8e93",
+       "share": 0.44
+      },
+      {
+       "color": "#f5f5f7",
+       "share": 0.33
+      },
+      {
+       "color": "#a1a1a6",
+       "share": 0.18
+      },
+      {
+       "color": "#30d158",
+       "share": 0.02
+      },
+      {
+       "color": "#ff453a",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#0a6fd8",
+      "hsl": {
+       "h": 211,
+       "s": 0.91,
+       "l": 0.44
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 2,
+     "inHero": 1,
+     "radius": 7,
+     "height": 28,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "导出报告"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 6,
+     "hairlineSamples": [
+      "aside.sidebar 390px",
+      "div.row 346px",
+      "div.row 346px",
+      "div.row 346px",
+      "div.row 346px"
+     ],
+     "outlinedBoxes": 6,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 6,
+     "boxRadius": 10,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 3,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 507
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 28,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 844,
+    "margins": {
+     "left": 21,
+     "right": 29
+    },
+    "sections": [
+     {
+      "sel": "div.verdict",
+      "tag": "div",
+      "top": 112,
+      "height": 379,
+      "words": 38,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "59",
+       "size": 48,
+       "tag": "span"
+      },
+      "left": 37,
+      "right": 37,
+      "textLeft": 37,
+      "textRight": 38,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.dims",
+      "tag": "div",
+      "top": 507,
+      "height": 388,
+      "words": 35,
+      "media": 0,
+      "middle": 49,
+      "heading": {
+       "text": "46",
+       "size": 26,
+       "tag": "div"
+      },
+      "left": 38,
+      "right": 38,
+      "textLeft": 38,
+      "textRight": 38,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.block",
+      "tag": "div",
+      "top": 911,
+      "height": 575,
+      "words": 75,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "逐项证据",
+       "size": 13,
+       "tag": "h3"
+      },
+      "left": 21,
+      "right": 42,
+      "textLeft": 21,
+      "textRight": 42,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "总评",
+      "size": 14,
+      "top": 66,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 16,
+      "n": 1
+     },
+     {
+      "x": 37,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 2,
+    "bodySize": 13,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "dark": true,
+    "ground": "#1c1c1e",
+    "sidebar": null,
+    "topbar": {
+     "h": 49
+    },
+    "canvas": {
+     "left": 16,
+     "right": 21
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 14,
+     "vw": 3.6,
+     "font": "-apple-system",
+     "weight": 600,
+     "tracking": -0.01,
+     "leading": 1.5,
+     "top": 66,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 1,
+     "firstScreen": 1,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 11,
+     "radii": [
+      [
+       10,
+       6
+      ],
+      [
+       0,
+       5
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 1,
+     "hues": 1,
+     "samples": [
+      {
+       "hue": 134,
+       "size": 31,
+       "radius": "6px"
+      }
+     ]
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 9,
+     "tabularShare": 1,
+     "kpiMax": 48
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.32,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      16,
+      26,
+      48
+     ]
+    },
+    "title": {
+     "text": "总评",
+     "size": 14,
+     "top": 66
+    },
+    "colourShare": 0.016
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "FAIL",
+   "id": "font-not-dealt",
+   "width": 1440,
+   "message": "The sheet dealt Inter, but the page renders -apple-system.",
+   "fix": "Load the dealt face (the link on the sheet) and put it first in font-family. A build that falls back to a default face lands on the default look."
+  },
+  {
+   "level": "WARN",
+   "id": "kpi-size",
+   "width": 1440,
+   "message": "A figure is set at 64px.",
+   "fix": "Figures run 16-40px on app screens; none of the studied screens reaches 48px. Size and isolation make a number loud, not display type.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v2/desktop-fold.jpg",
+   "pages": [
+    "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v2/desktop-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v2/tablet-fold.jpg",
+   "pages": [
+    "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v2/tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v2/mobile-fold.jpg",
+   "pages": [
+    "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v2/mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

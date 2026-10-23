@@ -1,4 +1,4 @@
-import { h, clear } from '../core/dom.js';
+import { h, clear, NONE } from '../core/dom.js';
 import { ProbeCard } from './ProbeCard.js';
 
 const ORDER = ['P3', 'P4', 'P5', 'P6', 'P2', 'P1'];
@@ -42,7 +42,7 @@ export function ProbeGrid({ onOpen, onProbeOnly }) {
       for (const id of ORDER) {
         const card = ProbeCard({ onOpen, onProbeOnly });
         cards.set(id, card);
-        card.update({ id, name: nameOf(id), status: 'pending', headline: '—', phases: {} }, opts);
+        card.update({ id, name: nameOf(id), status: 'pending', headline: NONE, phases: {} }, opts);
         el.appendChild(card.el);
       }
       return;

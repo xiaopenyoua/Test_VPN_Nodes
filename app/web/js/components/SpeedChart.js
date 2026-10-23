@@ -11,13 +11,13 @@ export function drawSpeed(canvas, samples, opts = {}) {
 
   const pts = (samples || []).filter((s) => typeof s.mbps === 'number');
   const cs = getComputedStyle(document.documentElement);
-  const grid = cs.getPropertyValue('--border').trim() || '#24282f';
-  const line = opts.color || cs.getPropertyValue('--chart-1').trim() || '#5b8cff';
-  const text = cs.getPropertyValue('--text-3').trim() || '#6a7280';
+  const grid = cs.getPropertyValue('--rule').trim() || '#161616';
+  const line = opts.color || cs.getPropertyValue('--accent').trim() || '#c6f24e';
+  const text = cs.getPropertyValue('--faint').trim() || '#949494';
 
   if (pts.length < 2) {
     ctx.fillStyle = text;
-    ctx.font = '11px ui-monospace, monospace';
+    ctx.font = '12px Inter, sans-serif';
     ctx.fillText(opts.empty || '等待采样…', 8, cssH / 2);
     return;
   }
@@ -29,7 +29,7 @@ export function drawSpeed(canvas, samples, opts = {}) {
   const x = (t) => padL + (t / maxT) * (cssW - padL - padR);
   const y = (v) => cssH - padB - (v / maxV) * (cssH - padT - padB);
 
-  // 网格
+  // 网格：三条水平参考线，不画竖线
   ctx.strokeStyle = grid;
   ctx.lineWidth = 1;
   for (let i = 0; i <= 3; i++) {
@@ -40,16 +40,13 @@ export function drawSpeed(canvas, samples, opts = {}) {
     ctx.stroke();
   }
 
-  // 面积
-  const grad = ctx.createLinearGradient(0, padT, 0, cssH - padB);
-  grad.addColorStop(0, hexA(line, 0.28));
-  grad.addColorStop(1, hexA(line, 0.02));
+  // 面积：一层很淡的平涂，不用渐变
   ctx.beginPath();
   ctx.moveTo(x(pts[0].t), cssH - padB);
   for (const p of pts) ctx.lineTo(x(p.t), y(p.mbps));
   ctx.lineTo(x(pts[pts.length - 1].t), cssH - padB);
   ctx.closePath();
-  ctx.fillStyle = grad;
+  ctx.fillStyle = hexA(line, 0.1);
   ctx.fill();
 
   // 折线
@@ -62,7 +59,7 @@ export function drawSpeed(canvas, samples, opts = {}) {
 
   if (opts.labels) {
     ctx.fillStyle = text;
-    ctx.font = '10px ui-monospace, monospace';
+    ctx.font = '12px Inter, sans-serif';
     ctx.fillText(`${maxV.toFixed(0)} Mbps`, padL, 10);
     ctx.fillText('0', padL, cssH - 3);
   }

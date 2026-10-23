@@ -36,9 +36,12 @@ export function clear(node) {
   return node;
 }
 
+// 缺失值统一印一根横杠，不印 0：0 会被读成"测出来很差"
+export const NONE = '—';
+
 export const fmt = {
-  mbps: (v) => (v > 0 ? `${v.toFixed(v >= 100 ? 0 : 1)} Mbps` : '—'),
-  ms: (v) => (v > 0 ? `${Math.round(v)} ms` : '—'),
+  mbps: (v) => (v > 0 ? `${v.toFixed(v >= 100 ? 0 : 1)} Mbps` : NONE),
+  ms: (v) => (v > 0 ? `${Math.round(v)} ms` : NONE),
   pct: (v) => `${Math.round(v)}%`,
   bytes: (v) => {
     if (!v) return '0 B';

@@ -28,8 +28,8 @@ function proxyValid(v) {
 }
 
 export function ControlPanel({ onRun, onCancel }) {
-  let segMode, segPreset, input, hint, runBtn, note, summaryEl, fieldsEl;
-  // 结果出来后配置卡退回一行（P0-10）。用户点「修改配置」可临时展开，
+  let segMode, segPreset, input, hint, runBtn, note, summaryEl;
+  // 结果出来后配置卡退回一行。用户点「修改配置」可临时展开，
   // 一旦再次运行或回到初始态就复位，避免状态残留。
   let userExpanded = false;
   let lastPhase = '';
@@ -87,10 +87,11 @@ export function ControlPanel({ onRun, onCancel }) {
   note = h('div', { class: 'exit-note' });
   summaryEl = h('div', { class: 'config-summary' });
 
-  runBtn = h('button', { class: 'btn btn-primary', onclick: () => submit() }, '开始探测');
+  runBtn = h('button', { class: 'btn btn-primary', type: 'button', onclick: () => submit() }, '开始探测');
 
   const cancelBtn = h('button', {
     class: 'btn btn-danger',
+    type: 'button',
     onclick: () => onCancel(),
   }, '取消');
 
@@ -129,7 +130,7 @@ export function ControlPanel({ onRun, onCancel }) {
         type: 'button',
         'aria-label': `展开查看 ${warns.length} 条提示`,
         onclick: () => { userExpanded = true; render(); },
-      }, `⚠ ${warns.length} 条提示`));
+      }, `${warns.length} 条提示`));
     }
     summaryEl.appendChild(h('button', {
       class: 'btn btn-ghost btn-sm cs-edit',
@@ -185,7 +186,7 @@ export function ControlPanel({ onRun, onCancel }) {
       note.appendChild(h('span', { class: 'exit-main' }, '出网方式：' + (exit.detail || '未知')));
       // warning 各自独占一行：拼在一行会变成一条读不完的长句
       for (const w of (exit.warnings || [])) {
-        note.appendChild(h('span', { class: 'exit-warn' }, '⚠ ' + w));
+        note.appendChild(h('span', { class: 'exit-warn' }, '注意 · ' + w));
       }
     } else {
       note.appendChild(h('span', { class: 'exit-dot' }));
@@ -196,19 +197,16 @@ export function ControlPanel({ onRun, onCancel }) {
     if (collapsed) renderSummary();
   }
 
-  fieldsEl = h('div', { class: 'control-fields' },
+  const fieldsEl = h('div', { class: 'control-fields' },
     h('div', { class: 'field' }, h('span', { class: 'field-label' }, '出口模式'), modeSeg),
     h('div', { class: 'field grow' }, h('span', { class: 'field-label' }, '代理地址（可留空）'), input),
     h('div', { class: 'field' }, h('span', { class: 'field-label' }, '强度'), presetSeg),
-    h('div', { class: 'actions' }, cancelBtn, runBtn),
+    h('div', { class: 'control-actions' }, cancelBtn, runBtn),
     hint,
     note,
   );
 
-  const el = h('section', { class: 'card control-panel' }, fieldsEl, summaryEl);
-
-  // 让 hint 与 note 占满一行
-  hint.style.width = '100%';
+  const el = h('section', { class: 'panel control-panel' }, fieldsEl, summaryEl);
 
   render();
   return { el, render };

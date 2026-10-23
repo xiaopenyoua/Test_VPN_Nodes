@@ -13,7 +13,7 @@ const initial = {
   elapsedMs: 0,
   error: '',
   detailId: null,
-  // 总评与分评是两个独立功能页：总评来自一次完整运行，分评展示每一项的当前结果
+  // 三个独立目的地：总评来自一次完整运行，分评展示每一项的当前结果，设置放完整探测的高级参数
   tab: 'verdict',
   // 正在单项复测的探测项 ID；null 表示没有单项复测在跑
   onlyId: null,
@@ -30,7 +30,7 @@ const initial = {
   },
   // 上一次完整探测的耗时；单项复测不会覆盖它
   summaryElapsedMs: 0,
-  theme: localStorage.getItem('proxylens.theme') || 'auto',
+  theme: localStorage.getItem('proxylens.theme') || 'dark',
   streamOk: true,
 };
 

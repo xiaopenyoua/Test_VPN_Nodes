@@ -1,15 +1,15 @@
-import { h, clear } from './core/dom.js';
+import { h, clear, NONE } from './core/dom.js';
 import { store, resetForRun } from './core/store.js';
 import { api } from './core/api.js';
 import { applyTheme, watchSystemTheme } from './core/theme.js';
+import { Sidebar } from './components/Sidebar.js';
 import { TopBar } from './components/TopBar.js';
 import { ControlPanel } from './components/ControlPanel.js';
 import { VerdictPanelFactory } from './components/VerdictPanel.js';
 import { ProbeGrid } from './components/ProbeGrid.js';
 import { DetailDrawer } from './components/DetailDrawer.js';
-import { SettingsSheet } from './components/SettingsSheet.js';
+import { SettingsPanel } from './components/SettingsPanel.js';
 import { ProbeSettingsPanel } from './components/ProbeSettingsPanel.js';
-import { Tabs } from './components/Tabs.js';
 import { toast } from './components/Toast.js';
 
 const root = document.getElementById('app');
@@ -26,48 +26,66 @@ function exportReport(format) {
   window.open(api.reportUrl(format), '_blank');
 }
 
-const topbar = TopBar({ onSettings: () => openSettings(), onExport: exportReport });
-// 注意：TopBar 返回 { el, render }，下方统一用 topbar.el 挂载
+const sidebar = Sidebar({
+  value: store.state.tab,
+  onChange: (k) => store.patch({ tab: k }),
+});
+const topbar = TopBar({ onExport: exportReport });
 const control = ControlPanel({ onRun: startRun, onCancel: cancelRun });
-const verdict = VerdictPanelFactory({ onExport: exportReport });
+const verdict = VerdictPanelFactory({
+  onExport: exportReport,
+  // 状态带上点一段 = 去分评看那一项
+  onPickProbe: (id) => store.patch({ tab: 'probes', probeTarget: id }),
+});
 const grid = ProbeGrid({ onOpen: (id) => openDetail(id), onProbeOnly: (id) => probeOnly(id) });
 const probeSettings = ProbeSettingsPanel({
   onProbeOnly: (id) => probeOnly(id),
   onGoOverall: () => store.patch({ tab: 'verdict' }),
 });
+const settingsPanel = SettingsPanel();
 
-const metaLine = h('div', { class: 'section-title' }, '探测项');
-const runClock = h('div', { class: 'section-title', style: 'font-family:var(--font-mono)' }, '');
-
-// 总评与分评是两个独立功能页：总评回答「整体怎么样」，分评回答「每一项现在怎么样」。
-const tabs = Tabs({
-  items: [{ key: 'verdict', label: '总评' }, { key: 'probes', label: '分评' }],
-  value: store.state.tab,
-  onChange: (k) => store.patch({ tab: k }),
-});
-
-// 总评设置：影响一次完整探测（P1–P6），与分评的单项设置完全分开
-const overallHead = h('div', { class: 'panel-head' },
-  h('div', {},
-    h('div', { class: 'panel-title' }, '总评设置'),
-    h('div', { class: 'panel-desc' }, '影响完整探测（P1–P6），决定总评分数。'),
-  ),
-);
+// 总评页的运行摘要：把"这次结果是什么条件下跑出来的"写清楚
+const runMeta = h('div', { class: 'section-meta', hidden: true });
+const runClock = h('div', { class: 'section-meta' }, '');
 
 // 单项复测不重算总评，但必须在总评页说清楚，否则用户会以为总评被刷新了
 const summaryNote = h('div', { class: 'summary-note', hidden: true });
-const runMeta = h('div', { class: 'run-meta', hidden: true });
-const verdictPanel = h('div', { class: 'tab-panel', role: 'tabpanel', 'aria-label': '总评' },
-  overallHead,
-  control.el,
-  verdict.el,
-  runMeta,
-  summaryNote,
+
+// —— 总评：这套代理整体能不能用 ——
+const verdictView = h('div', { class: 'view' },
+  h('section', { class: 'section' },
+    h('div', { class: 'section-head' },
+      h('h2', { class: 'section-title' }, '探测条件'),
+      h('div', { class: 'section-meta' }, '影响完整探测（P1–P6）'),
+    ),
+    control.el,
+  ),
+  h('section', { class: 'section' },
+    h('div', { class: 'section-head' },
+      h('h2', { class: 'section-title' }, '结论'),
+      runMeta,
+    ),
+    h('div', { class: 'panel' }, verdict.el),
+    summaryNote,
+  ),
 );
-const probesPanel = h('div', { class: 'tab-panel', role: 'tabpanel', 'aria-label': '分评' },
-  probeSettings.el,
-  h('div', { class: 'section-head' }, metaLine, runClock),
-  grid.el,
+
+// —— 分评：哪一项坏了 ——
+const probesView = h('div', { class: 'view' },
+  h('section', { class: 'section' },
+    h('div', { class: 'section-head' },
+      h('h2', { class: 'section-title' }, '单项复测设置'),
+      h('div', { class: 'section-meta' }, '只影响「只测这项」，不改动总评'),
+    ),
+    probeSettings.el,
+  ),
+  h('section', { class: 'section' },
+    h('div', { class: 'section-head' },
+      h('h2', { class: 'section-title' }, '六项探测结果'),
+      runClock,
+    ),
+    grid.el,
+  ),
 );
 
 const footer = h('footer', { class: 'footer' },
@@ -77,19 +95,18 @@ const footer = h('footer', { class: 'footer' },
 
 // 先清掉 index.html 里的启动占位（.boot），否则它会永久留在页面顶部
 clear(root);
-root.appendChild(topbar.el);
-root.appendChild(tabs.el);
-root.appendChild(verdictPanel);
-root.appendChild(probesPanel);
-root.appendChild(footer);
+root.appendChild(sidebar.el);
+root.appendChild(h('div', { class: 'main' },
+  topbar.el,
+  h('div', { class: 'canvas' }, verdictView, probesView, settingsPanel.el),
+  footer,
+));
 
 let drawer = null;
-let settings = null;
 
 function openDetail(id) {
   const r = store.state.results.find((x) => x.id === id);
   if (!r) return;
-  closeSettings();
   if (drawer) drawer.el.remove();
   drawer = DetailDrawer({ onClose: closeDetail });
   drawer.render(r);
@@ -100,17 +117,6 @@ function openDetail(id) {
 function closeDetail() {
   if (drawer) { drawer.el.remove(); drawer = null; }
   store.patch({ detailId: null });
-}
-
-function openSettings() {
-  closeDetail();
-  if (settings) settings.el.remove();
-  settings = SettingsSheet({ onClose: closeSettings });
-  document.body.appendChild(settings.el);
-}
-
-function closeSettings() {
-  if (settings) { settings.el.remove(); settings = null; }
 }
 
 async function startRun(cfg) {
@@ -157,7 +163,7 @@ async function cancelRun() {
 let lastPhase = '';
 let verdictSig = '';
 
-// 结论区只在语义变化时重绘：每次采样都重建会重置圆环过渡、造成闪烁
+// 结论区只在语义变化时重绘：每次采样都重建会重置过渡、造成闪烁
 function renderVerdict(state) {
   const s = state.summary;
   const sig = s
@@ -178,17 +184,21 @@ function renderRunMeta(state) {
   const mode = state.config.mode === 'custom'
     ? '自定义代理'
     : state.config.mode === 'direct' ? '直连对照' : '系统代理';
-  const secs = state.summaryElapsedMs ? (state.summaryElapsedMs / 1000).toFixed(1) + 's' : '—';
+  const secs = state.summaryElapsedMs ? (state.summaryElapsedMs / 1000).toFixed(1) + 's' : NONE;
   runMeta.textContent = `${preset} · ${mode} · ${(state.results || []).length} 项 · 用时 ${secs}`;
 }
 
-function renderTabs(state) {
-  tabs.render(state.tab);
-  const onVerdict = state.tab === 'verdict';
-  verdictPanel.hidden = !onVerdict;
-  probesPanel.hidden = onVerdict;
+function renderViews(state) {
+  sidebar.render();
+  topbar.render();
+
+  const t = state.tab;
+  verdictView.hidden = t !== 'verdict';
+  probesView.hidden = t !== 'probes';
+  settingsPanel.el.hidden = t !== 'settings';
 
   probeSettings.render(state);
+  settingsPanel.render();
   renderRunMeta(state);
 
   const retested = (state.results || []).filter((r) => r.only);
@@ -202,10 +212,9 @@ store.subscribe((state) => {
   if (state.phase !== lastPhase) {
     lastPhase = state.phase;
     control.render();
-    topbar.render();
   }
   renderVerdict(state);
-  renderTabs(state);
+  renderViews(state);
   grid.render(state);
   if (drawer && state.detailId) {
     const r = state.results.find((x) => x.id === state.detailId);
@@ -291,7 +300,7 @@ function bindStream() {
 
 // —— 快捷键 ——
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { closeDetail(); closeSettings(); return; }
+  if (e.key === 'Escape') { closeDetail(); return; }
   if (e.key === 'Enter' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
     if (store.state.phase !== 'running') startRun(store.state.config);
   }
@@ -318,8 +327,7 @@ document.addEventListener('keydown', (e) => {
   bindStream();
   const st = store.state;
   renderVerdict(st);
-  renderTabs(st);
+  renderViews(st);
   grid.render(st);
   control.render();
-  topbar.render();
 })();

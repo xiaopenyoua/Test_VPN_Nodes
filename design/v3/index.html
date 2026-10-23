@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<title>ProxyLens · 粘土拟态设计稿</title>
+<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+<div class="app">
+
+  <aside class="dock">
+    <div class="brand">
+      <span class="blob" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="6.4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M15.8 15.8 20 20" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-text"><b>ProxyLens</b><small>代理能力探测</small></span>
+    </div>
+
+    <nav class="nav" aria-label="主导航">
+      <button data-tab="verdict">总评</button>
+      <button data-tab="probes">分评</button>
+      <button data-tab="settings">设置</button>
+    </nav>
+
+    <div class="dock-foot">
+      <span class="dock-label">外观</span>
+      <div class="seg seg-sm" id="themeSeg">
+        <button data-theme-opt="auto">自动</button>
+        <button data-theme-opt="light">亮</button>
+        <button data-theme-opt="dark">暗</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <header class="top">
+      <div class="top-copy">
+        <h1 id="pageTitle">总评</h1>
+        <p id="pageSub">这套代理整体能不能用</p>
+      </div>
+      <button class="btn btn-go" id="exportBtn">导出报告</button>
+    </header>
+
+    <div class="slab">
+
+      <!-- ============ 总评 ============ -->
+      <section class="view" id="view-verdict">
+        <div class="verdict">
+          <div class="score-box">
+            <div class="score-coin"><span class="score">59</span></div>
+            <span class="score-cap">总分</span>
+          </div>
+
+          <div class="verdict-copy">
+            <span class="tag tag-warn">AI 受限</span>
+            <h2>能用，但 ChatGPT 打不开</h2>
+            <p class="lede">Gemini 与 OpenAI API 都正常，说明链路本身是通的。卡住的是出口身份——Cloudflare 把当前 IP 认成了 VPN。</p>
+            <ul class="tips">
+              <li>换一个非 WARP 出口再测，当前出口 <code>loc=SG · warp=on</code>，原地重测结果不会变</li>
+              <li>P1 到第 42 秒就没有数据了，下大文件会中断</li>
+            </ul>
+          </div>
+
+          <div class="pebble-wrap">
+            <div class="pebbles-cap">
+              <span class="cap-wide">六项耗时 · 越宽越慢</span><span class="cap-narrow">六项状态</span>
+              <span>点一颗看该项</span>
+            </div>
+            <div class="pebbles" aria-label="六项探测状态">
+              <button class="pebble" data-state="bad" style="--w:1.4"><i></i>P3</button>
+              <button class="pebble" data-state="ok" style="--w:1.1"><i></i>P4</button>
+              <button class="pebble" data-state="ok" style="--w:.7"><i></i>P5</button>
+              <button class="pebble" data-state="ok" style="--w:1"><i></i>P6</button>
+              <button class="pebble" data-state="ok" style="--w:1.2"><i></i>P2</button>
+              <button class="pebble" data-state="bad" style="--w:3.6"><i></i>P1</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dims">
+          <div class="dim clay">
+            <div class="dim-top"><span>速度</span><span class="dim-w">权重 40%</span></div>
+            <div class="dim-val">46</div>
+            <div class="meter"><i style="--p:46;--c:var(--warn)"></i></div>
+            <p>约 3.8 Mbps · 单流，第 42 秒后无数据</p>
+          </div>
+          <div class="dim clay">
+            <div class="dim-top"><span>稳定性</span><span class="dim-w">权重 30%</span></div>
+            <div class="dim-val">91</div>
+            <div class="meter"><i style="--p:91;--c:var(--good)"></i></div>
+            <p>成功率 100% · RTT 182 ms · 抖动 26 ms</p>
+          </div>
+          <div class="dim clay">
+            <div class="dim-top"><span>AI 可用性</span><span class="dim-w">权重 30%</span></div>
+            <div class="dim-val">43</div>
+            <div class="meter"><i style="--p:43;--c:var(--bad)"></i></div>
+            <p>ChatGPT 受限 · Gemini 可用 · API 可达</p>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>逐项证据</h3>
+          <div class="rows" id="evidenceRows"></div>
+        </div>
+
+        <button class="setup-strip" id="toSettings">
+          <span class="strip-main">整体设置 · 系统代理 · 快速档 · 六项一起跑</span>
+          <span class="strip-go">去改</span>
+        </button>
+      </section>
+
+      <!-- ============ 分评 ============ -->
+      <section class="view" id="view-probes" hidden>
+        <div class="block">
+          <h3>六项真实探测</h3>
+          <p class="hint">每项都能单独调参数。「这项设置」里改的只对这一项生效，不动整体设置。</p>
+          <div class="rows rows-probe" id="probeRows"></div>
+        </div>
+      </section>
+
+      <!-- ============ 设置 ============ -->
+      <section class="view" id="view-settings" hidden>
+        <div class="block">
+          <h3>整体设置</h3>
+          <p class="hint">这里是六项共用的设置。单项要另调，在分评页那一行点「这项设置」——只覆盖那一项，不动这里。</p>
+
+          <div class="list">
+            <div class="field">
+              <div class="field-copy">
+                <span class="field-name">代理来源</span>
+                <span class="field-desc">选系统代理时直接用操作系统的设置，不读下面的地址</span>
+              </div>
+              <div class="seg seg-mode" id="modeSeg">
+                <button aria-pressed="true">系统代理</button>
+                <button aria-pressed="false">自定义</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-copy">
+                <span class="field-name">代理地址</span>
+                <span class="field-desc">http / https / socks5，例如 http://127.0.0.1:7890</span>
+              </div>
+              <input class="text-input" id="proxyUrl" placeholder="http://127.0.0.1:7890" disabled />
+            </div>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>运行参数</h3>
+          <p class="hint">这三项是六项共用的默认值。某一项要特殊对待，去分评页那一行的「这项设置」里改，改完标「已覆盖」。</p>
+          <div class="list">
+            <div class="field">
+              <div class="field-copy">
+                <span class="field-name">单请求超时</span>
+                <span class="field-desc">任一 HTTP 请求的超时上限</span>
+              </div>
+              <input class="num-input" value="15" /><span class="unit">秒</span>
+            </div>
+            <div class="field">
+              <div class="field-copy">
+                <span class="field-name">并发连接数</span>
+                <span class="field-desc">默认 1 条流，等于你点下载时的真实速度；调高是多流叠加，数字好看但你实际拿不到</span>
+              </div>
+              <input class="num-input" value="1" /><span class="unit">条</span>
+            </div>
+            <div class="field">
+              <div class="field-copy">
+                <span class="field-name">流量预算</span>
+                <span class="field-desc">一次下载最多消耗多少流量</span>
+              </div>
+              <input class="num-input" value="20" /><span class="unit">MB</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="foot">「单次时长」和「长时稳定性」不在这里，因为只有 P1 跑下载。它们属于 P1 自己——去「分评 · P1 · 这项设置」里设 30 分钟。</p>
+      </section>
+
+      <footer class="slab-foot">
+        <span>ProxyLens · 本地运行 · 数据不外传</span>
+        <span>结果只代表本次链路状态</span>
+      </footer>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

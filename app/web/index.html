@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="dark light" />
   <title>ProxyLens · 代理能力探测</title>
+  <link rel="preload" href="/fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="/css/tokens.css" />
   <link rel="stylesheet" href="/css/ui.css" />
   <script>
     // 首帧前定主题，避免先画深色再闪成亮色。
-    // auto 跟随系统；显式选择优先于系统偏好。
+    // 首次打开默认深色（这是诊断工具的主场景）；用户显式选择优先于系统偏好。
     (function () {
-      var pref = localStorage.getItem('proxylens.theme') || 'auto';
+      var pref = localStorage.getItem('proxylens.theme') || 'dark';
       var dark = pref === 'dark' ||
         (pref === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
       var root = document.documentElement;
@@ -25,7 +26,7 @@
   </script>
 </head>
 <body>
-  <div id="app" class="app-shell">
+  <div id="app" class="app">
     <div class="boot">正在加载 ProxyLens…</div>
   </div>
   <script type="module" src="/js/main.js"></script>

@@ -24,7 +24,7 @@ const FIELDS = {
 };
 
 export function ProbeSettingsPanel({ onProbeOnly, onGoOverall }) {
-  const el = h('section', { class: 'card probe-settings' });
+  const el = h('section', { class: 'panel probe-settings' });
   let lastTarget = '';
   let runBtn = null;
   let exitText = null;

@@ -1,0 +1,1905 @@
+{
+ "url": "design/v3/index.html",
+ "at": "2026-10-23T02:59:45.051Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 2,
+   "filled": [
+    0.95,
+    1
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 1241,
+     "screens": 1.4,
+     "words": 174,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 20,
+     "vw": 1.4,
+     "font": "ui-rounded",
+     "weight": 700,
+     "tracking": -0.01,
+     "leading": 1.25,
+     "top": 16,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "总评",
+     "words": 1,
+     "lines": 1,
+     "size": 20,
+     "font": "ui-rounded"
+    },
+    "headings": [
+     {
+      "text": "59",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 58,
+      "vw": 4,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.09,
+      "top": 126,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "46",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.22,
+      "top": 523,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "91",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.22,
+      "top": 523,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "43",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.22,
+      "top": 523,
+      "tag": "div",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 4,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 1,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "PingFang SC",
+       "share": 0.63,
+       "mono": false
+      },
+      {
+       "family": "ui-rounded",
+       "share": 0.37,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      20,
+      26,
+      36,
+      58
+     ],
+     "sizeCount": 9,
+     "notLoaded": [],
+     "body": {
+      "font": "PingFang SC",
+      "size": 14.5,
+      "leading": 1.62,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": null
+     },
+     "measureChars": 92,
+     "max": {
+      "size": 58,
+      "vw": 4,
+      "font": "ui-rounded",
+      "text": "59"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.06,
+     "centerShare": 0.03,
+     "smallText": 10
+    },
+    "eyebrows": [
+     {
+      "text": "权重 40%",
+      "above": "46",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 494
+     },
+     {
+      "text": "权重 30%",
+      "above": "91",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 494
+     },
+     {
+      "text": "权重 30%",
+      "above": "43",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 494
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#ffffff",
+     "bodyBgHsl": {
+      "h": 0,
+      "s": 0,
+      "l": 1
+     },
+     "dark": false,
+     "sectionBgs": [],
+     "textColors": [
+      {
+       "color": "#9c4f70",
+       "share": 0.49
+      },
+      {
+       "color": "#a83264",
+       "share": 0.24
+      },
+      {
+       "color": "#7d1f4a",
+       "share": 0.22
+      },
+      {
+       "color": "#0b7a52",
+       "share": 0.02
+      },
+      {
+       "color": "#a32a2a",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#d9f7e8",
+      "hsl": {
+       "h": 150,
+       "s": 0.65,
+       "l": 0.91
+      },
+      "fg": "#0b7a52"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 9,
+     "inHero": 8,
+     "radius": "pill",
+     "height": 52,
+     "withShadow": 9,
+     "withGradient": 3,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "总评",
+      "导出报告",
+      "P3",
+      "P4",
+      "P5"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 24,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "aside.dock → rgba(146, 64, 106, 0.16) 8px 8px 18px 0px, rgba(255, 255, 255, 0.95) 3px 3px 7px",
+      "button.is-current → rgba(146, 64, 106, 0.13) 4px 4px 10px 0px, rgba(255, 255, 255, 0.92) 2px 2px 5px",
+      "button → rgba(146, 64, 106, 0.13) 4px 4px 10px 0px, rgba(255, 255, 255, 0.92) 2px 2px 5px",
+      "button#exportBtn.btn.btn-go → rgba(190, 24, 93, 0.3) 6px 6px 14px 0px, rgba(255, 255, 255, 0.45) 3px 3px 7px 0"
+     ],
+     "gradients": 13,
+     "scrims": 0,
+     "gradientSamples": [
+      "aside.dock → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%)",
+      "div.slab → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%)",
+      "div.verdict → linear-gradient(160deg, rgb(255, 250, 240) 0%, rgb(253, 238, 246) 100%)",
+      "div.dim.clay → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%)"
+     ],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 3,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 474
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 140,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 1241,
+    "margins": {
+     "left": 30,
+     "right": 40
+    },
+    "sections": [
+     {
+      "sel": "div.verdict",
+      "tag": "div",
+      "top": 100,
+      "height": 350,
+      "words": 36,
+      "media": 0,
+      "middle": 10,
+      "heading": {
+       "text": "59",
+       "size": 58,
+       "tag": "span"
+      },
+      "left": 316,
+      "right": 66,
+      "textLeft": 316,
+      "textRight": 66,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.dims",
+      "tag": "div",
+      "top": 474,
+      "height": 160,
+      "words": 38,
+      "media": 0,
+      "middle": 62,
+      "heading": {
+       "text": "46",
+       "size": 36,
+       "tag": "div"
+      },
+      "left": 312,
+      "right": 62,
+      "textLeft": 312,
+      "textRight": 62,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.block",
+      "tag": "div",
+      "top": 658,
+      "height": 431,
+      "words": 74,
+      "media": 0,
+      "middle": 383,
+      "heading": {
+       "text": "逐项证据",
+       "size": 16,
+       "tag": "h3"
+      },
+      "left": 290,
+      "right": 60,
+      "textLeft": 290,
+      "textRight": 60,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "总评",
+      "size": 20,
+      "top": 16,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 290,
+      "n": 2
+     },
+     {
+      "x": 520,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 4,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0.12,
+    "voidBox": {
+     "x": 0,
+     "y": 240,
+     "w": 240,
+     "h": 660
+    }
+   },
+   "app": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "dark": false,
+    "ground": "#ffffff",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 30,
+     "right": 40
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 20,
+     "vw": 1.4,
+     "font": "ui-rounded",
+     "weight": 700,
+     "tracking": -0.01,
+     "leading": 1.25,
+     "top": 16,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 2,
+     "firstScreen": 2,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 6,
+     "radii": [
+      [
+       34,
+       3
+      ],
+      [
+       26,
+       3
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 5,
+     "softShadows": 1,
+     "shadowSamples": [
+      "rgba(146, 64, 106, 0.16) 8px 8px 18px 0px",
+      "rgba(146, 64, 106, 0.16) 8px 8px 18px 0px",
+      "rgba(146, 64, 106, 0.16) 8px 8px 18px 0px"
+     ],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 6,
+     "tabularShare": 0.33,
+     "kpiMax": 58
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.39,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      20,
+      26,
+      36,
+      58
+     ]
+    },
+    "title": {
+     "text": "总评",
+     "size": 20,
+     "top": 16
+    },
+    "colourShare": 0.01
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.94
+   ],
+   "motion": {
+    "elements": 2,
+    "css": 0,
+    "transitions": 2,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 1024,
+     "screens": 1,
+     "words": 173,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 20,
+     "vw": 2.6,
+     "font": "ui-rounded",
+     "weight": 700,
+     "tracking": -0.01,
+     "leading": 1.25,
+     "top": 94,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "总评",
+     "words": 1,
+     "lines": 1,
+     "size": 20,
+     "font": "ui-rounded"
+    },
+    "headings": [
+     {
+      "text": "59",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 48,
+      "vw": 6.3,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.15,
+      "top": 198,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "能用，但 ChatGPT 打不开",
+      "words": 3,
+      "chars": 16,
+      "lines": 1,
+      "size": 26,
+      "vw": 3.4,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.28,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.4,
+      "top": 239,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "46",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.23,
+      "top": 613,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "91",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.23,
+      "top": 613,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "43",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.23,
+      "top": 613,
+      "tag": "div",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 5,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 1,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "PingFang SC",
+       "share": 0.63,
+       "mono": false
+      },
+      {
+       "family": "ui-rounded",
+       "share": 0.37,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      20,
+      26,
+      36,
+      48
+     ],
+     "sizeCount": 9,
+     "notLoaded": [],
+     "body": {
+      "font": "PingFang SC",
+      "size": 14.5,
+      "leading": 1.62,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": null
+     },
+     "measureChars": 66,
+     "max": {
+      "size": 48,
+      "vw": 6.3,
+      "font": "ui-rounded",
+      "text": "59"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.06,
+     "centerShare": 0.03,
+     "smallText": 10
+    },
+    "eyebrows": [
+     {
+      "text": "这套代理整体能不能用",
+      "above": "59",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 120
+     },
+     {
+      "text": "AI 受限",
+      "above": "能用，但 ChatGPT 打不开",
+      "upper": true,
+      "tracked": false,
+      "mono": false,
+      "pill": true,
+      "size": 12.5,
+      "top": 198
+     },
+     {
+      "text": "权重 40%",
+      "above": "46",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 583
+     },
+     {
+      "text": "权重 30%",
+      "above": "91",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 583
+     },
+     {
+      "text": "权重 30%",
+      "above": "43",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 583
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#ffffff",
+     "bodyBgHsl": {
+      "h": 0,
+      "s": 0,
+      "l": 1
+     },
+     "dark": false,
+     "sectionBgs": [],
+     "textColors": [
+      {
+       "color": "#9c4f70",
+       "share": 0.49
+      },
+      {
+       "color": "#a83264",
+       "share": 0.24
+      },
+      {
+       "color": "#7d1f4a",
+       "share": 0.22
+      },
+      {
+       "color": "#0b7a52",
+       "share": 0.02
+      },
+      {
+       "color": "#a32a2a",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#d9f7e8",
+      "hsl": {
+       "h": 150,
+       "s": 0.65,
+       "l": 0.91
+      },
+      "fg": "#0b7a52"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 7,
+     "inHero": 6,
+     "radius": "pill",
+     "height": 52,
+     "withShadow": 7,
+     "withGradient": 2,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "导出报告",
+      "P3",
+      "P4",
+      "P6",
+      "P2"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 23,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "aside.dock → rgba(146, 64, 106, 0.16) 8px 8px 18px 0px, rgba(255, 255, 255, 0.95) 3px 3px 7px",
+      "button.is-current → rgba(146, 64, 106, 0.13) 4px 4px 10px 0px, rgba(255, 255, 255, 0.92) 2px 2px 5px",
+      "button#exportBtn.btn.btn-go → rgba(190, 24, 93, 0.3) 6px 6px 14px 0px, rgba(255, 255, 255, 0.45) 3px 3px 7px 0",
+      "div.slab → rgba(146, 64, 106, 0.16) 8px 8px 18px 0px, rgba(255, 255, 255, 0.95) 3px 3px 7px"
+     ],
+     "gradients": 13,
+     "scrims": 0,
+     "gradientSamples": [
+      "aside.dock → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%)",
+      "div.slab → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%)",
+      "div.verdict → linear-gradient(160deg, rgb(255, 250, 240) 0%, rgb(253, 238, 246) 100%)",
+      "div.dim.clay → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%)"
+     ],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 3,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 563
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 36,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 1024,
+    "margins": {
+     "left": 34,
+     "right": 34
+    },
+    "sections": [
+     {
+      "sel": "div.verdict",
+      "tag": "div",
+      "top": 172,
+      "height": 367,
+      "words": 36,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "59",
+       "size": 48,
+       "tag": "span"
+      },
+      "left": 60,
+      "right": 60,
+      "textLeft": 60,
+      "textRight": 60,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.dims",
+      "tag": "div",
+      "top": 563,
+      "height": 179,
+      "words": 38,
+      "media": 0,
+      "middle": 58,
+      "heading": {
+       "text": "46",
+       "size": 36,
+       "tag": "div"
+      },
+      "left": 56,
+      "right": 56,
+      "textLeft": 56,
+      "textRight": 56,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.block",
+      "tag": "div",
+      "top": 766,
+      "height": 431,
+      "words": 74,
+      "media": 0,
+      "middle": 45,
+      "heading": {
+       "text": "逐项证据",
+       "size": 16,
+       "tag": "h3"
+      },
+      "left": 34,
+      "right": 50,
+      "textLeft": 34,
+      "textRight": 50,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "总评",
+      "size": 20,
+      "top": 94,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 34,
+      "n": 2
+     },
+     {
+      "x": 230,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 4,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "dark": false,
+    "ground": "#ffffff",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 34,
+     "right": 34
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 20,
+     "vw": 2.6,
+     "font": "ui-rounded",
+     "weight": 700,
+     "tracking": -0.01,
+     "leading": 1.25,
+     "top": 94,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 1,
+     "firstScreen": 1,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 5,
+     "radii": [
+      [
+       26,
+       3
+      ],
+      [
+       34,
+       2
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 4,
+     "softShadows": 1,
+     "shadowSamples": [
+      "rgba(146, 64, 106, 0.16) 8px 8px 18px 0px",
+      "rgba(146, 64, 106, 0.16) 8px 8px 18px 0px",
+      "rgba(146, 64, 106, 0.16) 8px 8px 18px 0px"
+     ],
+     "glass": 0
+    },
+    "chips": {
+     "count": 1,
+     "hues": 1,
+     "samples": [
+      {
+       "hue": 150,
+       "size": 53,
+       "radius": "999px"
+      }
+     ]
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 6,
+     "tabularShare": 0.33,
+     "kpiMax": 48
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.39,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      20,
+      26,
+      36,
+      48
+     ]
+    },
+    "title": {
+     "text": "总评",
+     "size": 20,
+     "top": 94
+    },
+    "colourShare": 0.021
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.88
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 844,
+     "screens": 1,
+     "words": 169,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 18,
+     "vw": 4.6,
+     "font": "ui-rounded",
+     "weight": 700,
+     "tracking": -0.02,
+     "leading": 1.25,
+     "top": 133,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "总评",
+     "words": 1,
+     "lines": 1,
+     "size": 18,
+     "font": "ui-rounded"
+    },
+    "headings": [
+     {
+      "text": "59",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 38,
+      "vw": 9.7,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.22,
+      "top": 209,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "46",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 36,
+      "vw": 9.2,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.75,
+      "top": 721,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "91",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 36,
+      "vw": 9.2,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.75,
+      "top": 896,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "43",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 36,
+      "vw": 9.2,
+      "font": "ui-rounded",
+      "weight": 700,
+      "tracking": -0.03,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.75,
+      "top": 1070,
+      "tag": "div",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 4,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 1,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "PingFang SC",
+       "share": 0.62,
+       "mono": false
+      },
+      {
+       "family": "ui-rounded",
+       "share": 0.38,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      20,
+      36,
+      38
+     ],
+     "sizeCount": 9,
+     "notLoaded": [],
+     "body": {
+      "font": "PingFang SC",
+      "size": 14.5,
+      "leading": 1.62,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": null
+     },
+     "measureChars": 42,
+     "max": {
+      "size": 38,
+      "vw": 9.7,
+      "font": "ui-rounded",
+      "text": "59"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.06,
+     "centerShare": 0.04,
+     "smallText": 10
+    },
+    "eyebrows": [
+     {
+      "text": "总评",
+      "above": "59",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 18,
+      "top": 133
+     },
+     {
+      "text": "权重 40%",
+      "above": "46",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 692
+     },
+     {
+      "text": "权重 30%",
+      "above": "91",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 866
+     },
+     {
+      "text": "权重 30%",
+      "above": "43",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 1041
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#ffffff",
+     "bodyBgHsl": {
+      "h": 0,
+      "s": 0,
+      "l": 1
+     },
+     "dark": false,
+     "sectionBgs": [],
+     "textColors": [
+      {
+       "color": "#9c4f70",
+       "share": 0.47
+      },
+      {
+       "color": "#a83264",
+       "share": 0.25
+      },
+      {
+       "color": "#7d1f4a",
+       "share": 0.23
+      },
+      {
+       "color": "#0b7a52",
+       "share": 0.02
+      },
+      {
+       "color": "#a32a2a",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#fffaf0",
+      "hsl": {
+       "h": 40,
+       "s": 1,
+       "l": 0.97
+      },
+      "fg": "#7d1f4a"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 3,
+     "inHero": 2,
+     "radius": "pill",
+     "height": 34,
+     "withShadow": 3,
+     "withGradient": 3,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "总评",
+      "导出报告"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 23,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "aside.dock → rgba(146, 64, 106, 0.16) 8px 8px 18px 0px, rgba(255, 255, 255, 0.95) 3px 3px 7px",
+      "button.is-current → rgba(146, 64, 106, 0.13) 4px 4px 10px 0px, rgba(255, 255, 255, 0.92) 2px 2px 5px",
+      "button#exportBtn.btn.btn-go → rgba(190, 24, 93, 0.3) 6px 6px 14px 0px, rgba(255, 255, 255, 0.45) 3px 3px 7px 0",
+      "div.slab → rgba(146, 64, 106, 0.16) 8px 8px 18px 0px, rgba(255, 255, 255, 0.95) 3px 3px 7px"
+     ],
+     "gradients": 15,
+     "scrims": 0,
+     "gradientSamples": [
+      "aside.dock → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%)",
+      "div.slab → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%)",
+      "div.verdict → linear-gradient(160deg, rgb(255, 250, 240) 0%, rgb(253, 238, 246) 100%)",
+      "div.score-coin → linear-gradient(160deg, rgb(251, 207, 232), rgb(249, 168, 212))"
+     ],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 3,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 672
+      },
+      {
+       "count": 6,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 1238
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 34,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 844,
+    "margins": {
+     "left": 26,
+     "right": 26
+    },
+    "sections": [
+     {
+      "sel": "div.verdict",
+      "tag": "div",
+      "top": 191,
+      "height": 457,
+      "words": 34,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "59",
+       "size": 38,
+       "tag": "span"
+      },
+      "left": 44,
+      "right": 44,
+      "textLeft": 44,
+      "textRight": 44,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.dims",
+      "tag": "div",
+      "top": 672,
+      "height": 509,
+      "words": 38,
+      "media": 0,
+      "middle": 2,
+      "heading": {
+       "text": "46",
+       "size": 36,
+       "tag": "div"
+      },
+      "left": 48,
+      "right": 48,
+      "textLeft": 48,
+      "textRight": 48,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.block",
+      "tag": "div",
+      "top": 1205,
+      "height": 659,
+      "words": 74,
+      "media": 0,
+      "middle": 2,
+      "heading": {
+       "text": "逐项证据",
+       "size": 16,
+       "tag": "h3"
+      },
+      "left": 26,
+      "right": 54,
+      "textLeft": 26,
+      "textRight": 54,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "总评",
+      "size": 18,
+      "top": 133,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 44,
+      "n": 2
+     },
+     {
+      "x": 14,
+      "n": 1
+     },
+     {
+      "x": 26,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 4,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "dark": false,
+    "ground": "#ffffff",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 23,
+     "right": 23
+    },
+    "hero": {
+     "text": "总评",
+     "words": 1,
+     "chars": 2,
+     "lines": 1,
+     "size": 18,
+     "vw": 4.6,
+     "font": "ui-rounded",
+     "weight": 700,
+     "tracking": -0.02,
+     "leading": 1.25,
+     "top": 133,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 2,
+     "firstScreen": 2,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 12,
+     "radii": [
+      [
+       26,
+       9
+      ],
+      [
+       34,
+       3
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 5,
+     "softShadows": 7,
+     "shadowSamples": [
+      "rgba(146, 64, 106, 0.16) 8px 8px 18px 0px",
+      "rgba(146, 64, 106, 0.16) 8px 8px 18px 0px",
+      "rgba(146, 64, 106, 0.16) 8px 8px 18px 0px"
+     ],
+     "glass": 0
+    },
+    "chips": {
+     "count": 5,
+     "hues": 2,
+     "samples": [
+      {
+       "hue": 5,
+       "size": 42,
+       "radius": "999px"
+      },
+      {
+       "hue": 150,
+       "size": 42,
+       "radius": "999px"
+      },
+      {
+       "hue": 150,
+       "size": 42,
+       "radius": "999px"
+      },
+      {
+       "hue": 150,
+       "size": 42,
+       "radius": "999px"
+      }
+     ]
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 6,
+     "tabularShare": 0.33,
+     "kpiMax": 38
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.42,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      20,
+      36,
+      38
+     ]
+    },
+    "title": {
+     "text": "总评",
+     "size": 18,
+     "top": 133
+    },
+    "colourShare": 0.026
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "FAIL",
+   "id": "gradient",
+   "width": 1440,
+   "message": "13 gradient fill(s): aside.dock → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%) | div.slab → linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(253, 242, 248) 100%) | div.verdict → linear-gradient(160deg, rgb(255, 250, 240) 0%, rgb(253, 238, 246) 100%)",
+   "fix": "Use a flat colour or a real image. The only gradient allowed by default is a neutral scrim over a photo for legibility.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "button-fx",
+   "width": 1440,
+   "message": "Buttons with gradient fill and shadow/glow.",
+   "fix": "Flat fill, one colour.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "font-not-dealt",
+   "width": 1440,
+   "message": "The sheet dealt Inter, but the page renders PingFang SC, ui-rounded.",
+   "fix": "Load the dealt face (the link on the sheet) and put it first in font-family. A build that falls back to a default face lands on the default look."
+  },
+  {
+   "level": "FAIL",
+   "id": "heavy-shadow",
+   "width": 1440,
+   "message": "5 panel shadow(s) heavy enough to read as floating: rgba(146, 64, 106, 0.16) 8px 8px 18px 0px | rgba(146, 64, 106, 0.16) 8px 8px 18px 0px | rgba(146, 64, 106, 0.16) 8px 8px 18px 0px",
+   "fix": "Panels sit on the ground: separate them with a fill one step from the ground or a quiet 1px border. A shadow, if any, is under 8% black with a small blur. Real overlays (menus, dialogs, popovers) may float.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "tabular",
+   "width": 1440,
+   "message": "Only 33% of the figures use tabular numerals.",
+   "fix": "Set font-variant-numeric: tabular-nums on tables, KPIs and anything that updates, so digits keep their width.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "kpi-size",
+   "width": 1440,
+   "message": "A figure is set at 58px.",
+   "fix": "Figures run 16-40px on app screens; none of the studied screens reaches 48px. Size and isolation make a number loud, not display type.",
+   "alsoAt": [
+    768
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "palette-cream",
+   "width": 390,
+   "message": "Yellow-cream background (button #fffaf0).",
+   "fix": "Use the drawn palette. If you want warmth, take a low-chroma stone or bone, not a yellow cream."
+  },
+  {
+   "level": "FAIL",
+   "id": "icon-chips",
+   "width": 390,
+   "message": "5 icons sit in tinted squares or circles in 2 different colours.",
+   "fix": "This is the commonest tell of a generated dashboard. Drop the tinted square: a KPI is a label and a number; an icon, if it helps, is plain and in the text colour."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v3/desktop-fold.jpg",
+   "pages": [
+    "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v3/desktop-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v3/tablet-fold.jpg",
+   "pages": [
+    "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v3/tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v3/mobile-fold.jpg",
+   "pages": [
+    "/Volumes/ssd/projects-github/Test_VPN_Nodes/.taste-skill/v3/mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

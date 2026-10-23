@@ -1,4 +1,4 @@
-import { h, clear, fmt } from '../core/dom.js';
+import { h, clear, fmt, NONE } from '../core/dom.js';
 import { StatusBadge } from './StatusBadge.js';
 import { drawSpeed } from './SpeedChart.js';
 
@@ -16,7 +16,7 @@ export function DetailDrawer({ onClose }) {
     h('aside', { class: 'drawer', role: 'dialog', 'aria-modal': 'true' },
       h('div', { class: 'drawer-head' },
         title,
-        h('button', { class: 'btn btn-ghost btn-sm drawer-close', onclick: onClose }, '关闭 ✕'),
+        h('button', { class: 'btn btn-ghost btn-sm drawer-close', type: 'button', onclick: onClose }, '关闭'),
       ),
       body,
     ),
@@ -29,14 +29,14 @@ export function DetailDrawer({ onClose }) {
 
     body.appendChild(h('div', { style: 'display:flex;align-items:center;gap:12px;flex-wrap:wrap' },
       StatusBadge(result.status),
-      h('span', { style: 'font-family:var(--font-mono);font-size:20px;font-weight:600' }, result.headline || '—'),
+      h('span', { class: 'probe-value' }, result.headline || NONE),
       result.attribution ? h('span', { class: 'badge', dataset: { status: 'question' } }, '归因：' + (ATTR[result.attribution] || result.attribution)) : null,
     ));
 
     if (result.nextStep) {
-      body.appendChild(h('div', { class: 'dim', style: 'border-color:var(--info-border);background:var(--info-bg)' },
-        h('div', { class: 'dim-label', style: 'color:var(--info)' }, '下一步'),
-        h('div', { style: 'font-size:13px;margin-top:4px' }, result.nextStep),
+      body.appendChild(h('div', { class: 'degraded-flag' },
+        h('div', { class: 'settings-label' }, '下一步'),
+        h('div', { class: 'settings-desc', style: 'color:inherit' }, result.nextStep),
       ));
     }
 
@@ -51,7 +51,7 @@ export function DetailDrawer({ onClose }) {
     const maxV = Math.max(...rows.map(([, v]) => v), 1);
     if (rows.length) {
       body.appendChild(h('div', {},
-        h('div', { class: 'dim-label', style: 'margin-bottom:8px' }, '阶段耗时'),
+        h('div', { class: 'settings-label', style: 'margin-bottom:8px' }, '阶段耗时'),
         h('div', { class: 'waterfall' }, ...rows.map(([label, v, cls]) => h('div', { class: 'wf-row' },
           h('span', { class: 'wf-label' }, label),
           h('div', { class: 'wf-track' }, h('i', { class: `wf-bar ${cls}`, style: `left:0;width:${Math.max(2, (v / maxV) * 100)}%` })),
@@ -64,14 +64,14 @@ export function DetailDrawer({ onClose }) {
     if (result.samples && result.samples.filter((s) => s.mbps > 0).length > 1) {
       const cv = h('canvas');
       body.appendChild(h('div', {},
-        h('div', { class: 'dim-label', style: 'margin-bottom:8px' }, '吞吐曲线'),
+        h('div', { class: 'settings-label', style: 'margin-bottom:8px' }, '吞吐曲线'),
         h('div', { class: 'chart-wrap' },
           cv,
           h('div', { class: 'chart-legend' },
             h('span', {}, `均值 ${fmt.mbps(result.mbps)}`),
             h('span', {}, `P50 ${fmt.mbps(result.p50Mbps)}`),
             h('span', {}, `峰值 ${fmt.mbps(result.peakMbps)}`),
-            h('span', {}, `CV ${result.cv ?? '—'}`),
+            h('span', {}, `CV ${result.cv ?? NONE}`),
           ),
         ),
       ));
@@ -80,28 +80,28 @@ export function DetailDrawer({ onClose }) {
 
     // 关键指标
     const kv = h('dl', { class: 'kv' },
-      kvRow('HTTP 状态', String(result.httpStatus || '—')),
-      kvRow('最终 URL', result.finalUrl || '—'),
-      kvRow('TLS', result.tlsVersion || '—'),
-      kvRow('对端地址', result.remoteAddr || '—'),
+      kvRow('HTTP 状态', String(result.httpStatus || NONE)),
+      kvRow('最终 URL', result.finalUrl || NONE),
+      kvRow('TLS', result.tlsVersion || NONE),
+      kvRow('对端地址', result.remoteAddr || NONE),
       kvRow('下载字节', fmt.bytes(result.bytes)),
-      kvRow('成功率', result.successPct ? `${result.successPct}%` : '—'),
-      kvRow('抖动', result.jitterMs ? `${Math.round(result.jitterMs)} ms` : '—'),
-      kvRow('耗时', result.durationMs ? `${Math.round(result.durationMs)} ms` : '—'),
+      kvRow('成功率', result.successPct ? `${result.successPct}%` : NONE),
+      kvRow('抖动', result.jitterMs ? `${Math.round(result.jitterMs)} ms` : NONE),
+      kvRow('耗时', result.durationMs ? `${Math.round(result.durationMs)} ms` : NONE),
     );
-    body.appendChild(h('div', {}, h('div', { class: 'dim-label', style: 'margin-bottom:8px' }, '关键指标'), kv));
+    body.appendChild(h('div', {}, h('div', { class: 'settings-label', style: 'margin-bottom:8px' }, '关键指标'), kv));
 
     // 证据链
     if (result.evidence && result.evidence.length) {
       body.appendChild(h('div', {},
-        h('div', { class: 'dim-label', style: 'margin-bottom:8px' }, '证据链'),
+        h('div', { class: 'settings-label', style: 'margin-bottom:8px' }, '证据链'),
         h('ul', { class: 'evidence' }, ...result.evidence.map((e) => h('li', {}, e))),
       ));
     }
     if (result.error) {
-      body.appendChild(h('div', { class: 'dim', style: 'border-color:var(--danger-border);background:var(--danger-bg)' },
-        h('div', { class: 'dim-label', style: 'color:var(--danger)' }, '错误'),
-        h('div', { style: 'font-family:var(--font-mono);font-size:12px;margin-top:4px;word-break:break-all' }, result.error),
+      body.appendChild(h('div', { class: 'degraded-flag', style: 'background:var(--pill-negative-bg);color:var(--pill-negative-ink)' },
+        h('div', { class: 'settings-label' }, '错误'),
+        h('div', { class: 'settings-desc', style: 'color:inherit;word-break:break-all' }, result.error),
       ));
     }
 

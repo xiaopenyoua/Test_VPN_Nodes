@@ -1,83 +1,88 @@
-/* Design tokens —— 深色优先，亮色覆盖 */
+/* Design tokens —— framed-sheet / Apple
+   方向来自 draw.mjs --app --style framed-sheet（seed 1675105751）：
+   侧栏与顶栏共用一块冷灰底框，内容落在一张白色圆角“纸”上（inset 8px，1px 边，无投影）。
+   配色与字体按用户指定的 Apple 风格映射：systemGroupedBackground / label 三层灰 / 系统蓝。
+   彩色只在数据、状态与那一个主操作上。 */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Inter-latin.woff2') format('woff2');
+}
+
 :root {
-  --bg: #0b0c0e;
-  --surface: #111318;
-  --raised: #171a20;
-  --overlay: #1e2229;
-  --border: #24282f;
-  --border-strong: #333941;
-  /* 控件边界专用：--border 是装饰性描边（1.26:1），不能用来标识可交互控件（WCAG 1.4.11 要求 3:1） */
-  --line-control: #5C6470;
+  color-scheme: light;
 
-  --text: #e9ebef;
-  --text-2: #9aa1ac;
-  --text-3: #7E8794;
+  /* 底框（chrome）与纸（sheet）—— 深度只来自一档色调差 */
+  --chrome: #f5f5f7;
+  --sheet: #ffffff;
+  --sheet-edge: #e6e6eb;
 
-  --brand: #21BFAE;
-  --brand-hover: #2ED4C1;
-  --brand-active: #17A091;
-  --brand-weak: rgba(33, 191, 174, 0.12);
-  /* 青绿底上的文字色：白字仅 2.30:1，必须用近黑（8.26:1） */
-  --brand-ink: #04130F;
+  /* 卡片：纸张上的分组块，1px 边，无投影 */
+  --surface: #ffffff;
+  --raised: #f5f5f7;
+  --selected: #e8e8ed;
+  --border: #e6e6eb;
+  --rule: #f0f0f3;
+  --control: #d2d2d7;
 
-  --ok: #35d39a;
-  --ok-bg: rgba(53, 211, 154, 0.12);
-  --ok-border: rgba(53, 211, 154, 0.32);
+  /* 文字三层，每层都在自己的底上 ≥4.5:1 */
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --faint: #75757a;
 
-  --warn: #f5b544;
-  --warn-bg: rgba(245, 181, 68, 0.12);
-  --warn-border: rgba(245, 181, 68, 0.32);
+  /* 唯一的数据色：系统蓝。状态色只用于状态 */
+  --accent: #0071e3;
+  --accent-ink: #0062c4;
+  --accent-wash: #eaf3fd;
+  --positive: #157f3c;
+  --negative: #d70015;
+  --warning: #9a5b00;
 
-  --danger: #f5726f;
-  --danger-bg: rgba(245, 114, 111, 0.12);
-  --danger-border: rgba(245, 114, 111, 0.32);
+  --pill-positive-bg: #e4f5e9;
+  --pill-positive-ink: #0d5a2b;
+  --pill-negative-bg: #ffe9ea;
+  --pill-negative-ink: #a3000f;
+  --pill-warning-bg: #fdf1dc;
+  --pill-warning-ink: #74450a;
+  --pill-neutral-bg: #f0f0f3;
+  --pill-neutral-ink: #3a3a3c;
+  --pill-neutral-muted: #6e6e73;
 
-  --info: #64a6f5;
-  --info-bg: rgba(100, 166, 245, 0.12);
-  --info-border: rgba(100, 166, 245, 0.32);
+  /* 纸张 → 卡片 → 卡片内嵌套，半径逐级收小 */
+  --radius-sheet: 16px;
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-chip: 6px;
+  --radius-pill: 999px;
 
-  --chart-1: #21BFAE;
-  --chart-2: #35d39a;
-  --chart-3: #f5b544;
-  --chart-4: #c084fc;
-  --chart-5: #f5726f;
+  --sidebar-width: 232px;
+  --topbar-h: 48px;
+  --sheet-inset: 8px;
+  --gap: 16px;
+  --section-gap: 28px;
+  --pad: 28px;
+  --card-pad: 20px;
+  --row-height: 44px;
+  --control-height: 32px;
+  --nav-row: 30px;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro SC", "PingFang SC",
-    "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
-  --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
+  --fs-h1: 22px;
+  --fs-section: 15px;
+  --fs-kpi: 40px;
+  --fs-value: 22px;
+  --fs-body: 13px;
+  --fs-small: 12px;
 
-  --fs-11: 11px;
-  --fs-12: 12px;
-  --fs-13: 13px;
-  --fs-14: 14px;
-  --fs-16: 16px;
-  --fs-20: 20px;
-  --fs-28: 28px;
-  --fs-44: 44px;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+    'Helvetica Neue', 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    system-ui, sans-serif;
 
-  --r-sm: 6px;
-  --r-md: 10px;
-  --r-lg: 14px;
-  --r-xl: 20px;
-  --r-full: 999px;
-
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 12px;
-  --sp-4: 16px;
-  --sp-5: 20px;
-  --sp-6: 24px;
-  --sp-8: 32px;
-  --sp-10: 40px;
-
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.45);
-  --shadow-3: 0 24px 64px rgba(0, 0, 0, 0.55);
-
-  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  /* Apple 风格的两条曲线：出场用 ease-out（快起慢收），回弹用 spring（轻微过冲） */
+  /* Apple 的动效曲线：标准 ease-in-out 与出场 ease-out */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --dur-1: 120ms;
   --dur-2: 200ms;
   --dur-3: 320ms;
@@ -86,42 +91,40 @@
   --titlebar-h: 38px;
 }
 
-[data-theme="light"] {
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --raised: #f2f4f7;
-  --overlay: #ffffff;
-  --border: #e3e6ec;
-  --border-strong: #cfd5df;
-  --line-control: #838B99;
+/* 暗色是同一套结构的镜像：底框比纸亮一档，卡片再亮一档。
+   灰阶保持真正的中性，不用蓝黑。 */
+[data-theme="dark"] {
+  color-scheme: dark;
 
-  --text: #14171c;
-  --text-2: #5a6270;
-  --text-3: #666E7A;
+  --chrome: #232326;
+  --sheet: #17171a;
+  --sheet-edge: #2c2c30;
 
-  --brand: #0F766E;
-  --brand-hover: #0D6A62;
-  --brand-active: #0A5A53;
-  --brand-weak: rgba(15, 118, 110, 0.1);
-  --brand-ink: #FFFFFF;
+  --surface: #1f1f22;
+  --raised: #2a2a2e;
+  --selected: #3a3a3e;
+  --border: #2c2c30;
+  --rule: #26262a;
+  --control: #3f3f44;
 
-  --ok: #0f9d6e;
-  --ok-bg: rgba(15, 157, 110, 0.1);
-  --ok-border: rgba(15, 157, 110, 0.28);
+  --text: #f5f5f7;
+  --muted: #a1a1a6;
+  --faint: #8e8e93;
 
-  --warn: #b7791f;
-  --warn-bg: rgba(183, 121, 31, 0.1);
-  --warn-border: rgba(183, 121, 31, 0.28);
+  --accent: #0a84ff;
+  --accent-ink: #409cff;
+  --accent-wash: #16283c;
+  --positive: #32d74b;
+  --negative: #ff6961;
+  --warning: #ffb340;
 
-  --danger: #d64545;
-  --danger-bg: rgba(214, 69, 69, 0.1);
-  --danger-border: rgba(214, 69, 69, 0.28);
-
-  --info: #2f6bf0;
-  --info-bg: rgba(47, 107, 240, 0.1);
-  --info-border: rgba(47, 107, 240, 0.28);
-
-  --shadow-1: 0 1px 2px rgba(16, 24, 40, 0.06);
-  --shadow-2: 0 8px 24px rgba(16, 24, 40, 0.1);
-  --shadow-3: 0 24px 64px rgba(16, 24, 40, 0.16);
+  --pill-positive-bg: #14301f;
+  --pill-positive-ink: #6fe08c;
+  --pill-negative-bg: #3a1a1c;
+  --pill-negative-ink: #ff8b84;
+  --pill-warning-bg: #33260f;
+  --pill-warning-ink: #ffc46b;
+  --pill-neutral-bg: #2a2a2e;
+  --pill-neutral-ink: #f5f5f7;
+  --pill-neutral-muted: #a1a1a6;
 }

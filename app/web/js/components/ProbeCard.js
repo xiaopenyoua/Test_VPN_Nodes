@@ -1,4 +1,4 @@
-import { h, clear, fmt } from '../core/dom.js';
+import { h, clear, NONE } from '../core/dom.js';
 import { StatusBadge } from './StatusBadge.js';
 import { drawSpeed } from './SpeedChart.js';
 import { SustainTimeline, isLongRun } from './SustainTimeline.js';
@@ -7,7 +7,7 @@ import { SustainTimeline, isLongRun } from './SustainTimeline.js';
 // onProbeOnly(id) 由网格透传：用当前配置只重跑这一项，不打断其它卡的结果。
 export function ProbeCard({ onOpen, onProbeOnly }) {
   const el = h('article', {
-    class: 'card probe',
+    class: 'probe',
     tabindex: '0',
     role: 'button',
     'aria-label': '查看探测详情',
@@ -69,7 +69,7 @@ export function ProbeCard({ onOpen, onProbeOnly }) {
     ));
 
     el.appendChild(h('div', { class: 'probe-main' },
-      h('span', { class: 'probe-value' }, r.headline || '—'),
+      h('span', { class: 'probe-value' }, r.headline || NONE),
     ));
     // 首屏不出现裸状态码：状态码是证据，不是给用户看的语言，只在详情抽屉里呈现
     const sub = (r.subline || '').replace(/\s*·\s*HTTP\s*\d{3}/gi, '');
@@ -95,8 +95,7 @@ export function ProbeCard({ onOpen, onProbeOnly }) {
     }
 
     // 卡片正面只要一个主数字 + 一句次指标 + 一个详情入口。
-    // 原来这里有 DNS/TCP/TLS/TTFB 四格阶段表（6 卡共 24 个数字），是首屏最大的噪声源，
-    // 且 TTFB 等属于《07》§1.4 的禁用词——它们现在只在详情抽屉里出现。
+    // 阶段耗时（DNS/TCP/TLS/TTFB）只在详情抽屉里出现。
     el.appendChild(h('div', { class: 'probe-foot' },
       onlyBtn,
       h('span', { class: 'probe-more' }, '详情 ›'),
@@ -124,8 +123,4 @@ function exitIdentity(r) {
       title: 'Cloudflare WARP 共享 IP，OpenAI 会直接拒绝这类出口',
     }, 'WARP 出口') : null,
   );
-}
-
-function phaseCell(label, v) {
-  return h('div', { class: 'phase-cell' }, label, h('b', {}, v ? `${Math.round(v)}ms` : '—'));
 }

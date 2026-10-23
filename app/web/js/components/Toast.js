@@ -16,7 +16,7 @@ export function toast(msg, kind = 'info', ms = 2600) {
   setTimeout(() => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(6px)';
-    el.style.transition = 'all 200ms';
+    el.style.transition = 'opacity 200ms, transform 200ms';
     setTimeout(() => el.remove(), 220);
   }, ms);
 }
