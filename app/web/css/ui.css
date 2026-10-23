@@ -74,6 +74,26 @@ html, body {
 .segmented button[aria-pressed="true"] { background: var(--overlay); color: var(--text); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); }
 .segmented button:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* 开关：之前只有 DOM 没有样式，渲染成一条空胶囊。
+   轨道 44×26、滑块 20，开态滑块右移 18px（2 + 18 + 20 + 4 = 44）。 */
+.switch {
+  position: relative; flex: none; width: 44px; height: 26px; padding: 0;
+  border: 1px solid var(--line-control); border-radius: var(--r-full);
+  background: var(--raised); cursor: pointer;
+  transition: background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease);
+}
+.switch-knob {
+  position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+  border-radius: 50%; background: var(--text-2);
+  transition: transform var(--dur-2) var(--ease-spring), background var(--dur-2) var(--ease);
+}
+.switch[aria-checked="true"] { background: var(--brand); border-color: transparent; }
+.switch[aria-checked="true"] .switch-knob { transform: translateX(18px); background: var(--brand-ink); }
+.switch:hover:not(:disabled) { border-color: var(--text-3); }
+.switch[aria-checked="true"]:hover:not(:disabled) { border-color: transparent; background: var(--brand-hover); }
+.switch:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.switch:disabled { opacity: 0.45; cursor: not-allowed; }
+
 /* 输入框 */
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field-label { font-size: var(--fs-11); color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; }
@@ -134,25 +154,48 @@ html, body {
   border-radius: 2px; background: var(--warn-border);
 }
 
-/* 一级导航：总评 / 分评 是两个独立功能页 */
+/* 一级导航：总评 / 分评 是两个独立功能页。
+   只有两项，用分段控件比下划线 Tab 更能表达"当前选中"。 */
 .tabs {
-  display: flex; gap: var(--sp-1); margin-top: var(--sp-5);
-  border-bottom: 1px solid var(--border);
+  display: inline-flex; gap: 2px; padding: 3px; margin-top: var(--sp-5);
+  background: var(--raised); border: 1px solid var(--border); border-radius: var(--r-md);
 }
 .tab {
   appearance: none; border: 0; background: transparent; color: var(--text-2);
   font-family: inherit; font-size: var(--fs-13); font-weight: 500;
-  padding: 10px 14px; cursor: pointer; position: relative;
-  transition: color var(--dur-1) var(--ease);
+  padding: 7px 20px; border-radius: 7px; cursor: pointer;
+  transition: background var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
 }
 .tab:hover { color: var(--text); }
-.tab[aria-selected="true"] { color: var(--text); }
-.tab[aria-selected="true"]::after {
-  content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px;
-  border-radius: 2px; background: var(--brand);
-}
-.tab:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; border-radius: var(--r-sm); }
+.tab[aria-selected="true"] { background: var(--overlay); color: var(--text); box-shadow: var(--shadow-1); }
+.tab:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .tab-panel[hidden] { display: none; }
+
+/* 页内分区标题：总评设置 / 单项复测设置 */
+.panel-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-4); margin: var(--sp-5) 0 var(--sp-3); }
+.panel-title { font-size: var(--fs-14); font-weight: 600; letter-spacing: -0.01em; }
+.panel-desc { font-size: var(--fs-12); color: var(--text-3); margin-top: 2px; }
+
+/* 总评页的运行摘要：把"这次结果是什么条件下跑出来的"写清楚 */
+.run-meta {
+  margin-top: var(--sp-3); font-size: var(--fs-11); color: var(--text-3);
+  font-family: var(--font-mono); letter-spacing: 0.02em;
+}
+
+/* 分评页的单项设置：与总评设置完全分开 */
+.probe-settings { padding: var(--sp-4) var(--sp-5); margin-top: var(--sp-5); }
+.ps-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-4); margin-bottom: var(--sp-4); }
+.ps-title { font-size: var(--fs-14); font-weight: 600; letter-spacing: -0.01em; }
+.ps-desc { font-size: var(--fs-12); color: var(--text-3); margin-top: 2px; }
+.ps-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--sp-4); }
+.ps-field { display: flex; flex-direction: column; gap: 6px; }
+.ps-label { font-size: var(--fs-11); color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; }
+.ps-input-wrap { display: flex; align-items: center; gap: 6px; }
+.ps-unit { font-size: var(--fs-11); color: var(--text-3); }
+.ps-actions { margin-left: auto; }
+.ps-foot { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px dashed var(--border); font-size: var(--fs-11); color: var(--text-3); }
+.ps-exit { font-family: var(--font-mono); }
+.probe-seg { flex-wrap: wrap; }
 /* 单项复测提示：总评没被重算，这件事必须写在总评页上 */
 .summary-note {
   margin-top: var(--sp-3); padding: 8px 10px; border-radius: var(--r-sm);
@@ -205,7 +248,7 @@ html, body {
 .ring.is-running .ring-num { display: none; }
 
 /* 探测卡 */
-.section-head { display: flex; align-items: center; justify-content: space-between; margin: var(--sp-8) 0 var(--sp-3); }
+.section-head { display: flex; align-items: center; justify-content: space-between; margin: var(--sp-5) 0 var(--sp-3); }
 .section-title { font-size: var(--fs-13); color: var(--text-2); font-weight: 500; letter-spacing: 0.04em; }
 .probe-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); }
 /* 初始态预告卡：说明"将测什么"，不是骨架——骨架的语义是"数据在路上"，而此刻还没有数据 */
@@ -222,10 +265,13 @@ html, body {
   .verdict { grid-template-columns: 1fr; }
 }
 .probe {
-  position: relative; padding: var(--sp-4); cursor: pointer; overflow: hidden;
-  transition: border-color var(--dur-2) var(--ease), background var(--dur-2) var(--ease);
+  position: relative; display: flex; flex-direction: column; min-height: 176px;
+  padding: var(--sp-4); cursor: pointer; overflow: hidden;
+  transition: border-color var(--dur-2) var(--ease), background var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
 }
 .probe:hover { border-color: var(--border-strong); background: var(--raised); }
+/* 分评设置里选中的那一项，在网格里给出对应高亮 */
+.probe.is-selected { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand-weak); }
 .probe.is-running { border-color: var(--brand); }
 .probe.is-running::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -243,9 +289,16 @@ html, body {
 .phase-cell { font-size: var(--fs-11); color: var(--text-3); font-family: var(--font-mono); }
 .phase-cell b { display: block; color: var(--text-2); font-weight: 500; font-size: var(--fs-12); }
 .sparkline { width: 100%; height: 34px; margin-top: var(--sp-3); display: block; }
-.probe-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); min-height: 18px; }
+/* 卡片等高：底部操作区永远贴底，避免有图/无图的卡片按钮高低不齐 */
+.probe-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); min-height: 18px; margin-top: auto; padding-top: var(--sp-3); }
 .probe-more { font-size: var(--fs-11); color: var(--text-3); }
 .probe:hover .probe-more { color: var(--text-2); }
+/* 「只测这项」是卡片上的第二动作，做成小胶囊，比纯文字更容易被发现 */
+.probe-only {
+  border: 1px solid var(--border); background: var(--raised); color: var(--text-2);
+  height: 26px; padding: 0 10px; border-radius: var(--r-full);
+}
+.probe-only:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); background: var(--brand-weak); }
 
 /* 徽章 */
 .badge {

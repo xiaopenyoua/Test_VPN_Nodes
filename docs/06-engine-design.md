@@ -2029,3 +2029,76 @@ var StreakPoints = []Point{{0, 100}, {1, 85}, {2, 65}, {3, 40}, {5, 0}}         
 
 1. ux-arch 的 `TLS_ERROR`/`UNSTABLE` **未**作为 verdict 新值（与 pm「不得新增」冲突），改由 `diagnosis` 承载——ux-arch 无需改 `verdictCopy`，但详情层要能显示 `diagnosis`。
 2. ux-researcher 建议的 `INCONCLUSIVE` 独立态，当前映射为 `NET_FAIL + diagnosis=INCONCLUSIVE`（宁红勿绿）。**建议 pm 在 PRD 增补第 10 态**，届时只需改 §0.4(a) 一张表。
+
+---
+
+## 17. 实现口径修订（v1.2 · 与代码对齐）
+
+> 本节记录**代码实际实现**与上文设计稿的差异。两者冲突时以本节为准；上文保留为设计意图留档。
+> 对应代码：`internal/config`、`internal/engine`、`internal/probe`、`internal/score`。
+
+### 17.1 评分权重与未测维度
+
+| 维度 | 权重 | 说明 |
+|---|---|---|
+| Speed | 40% | P1 主；P1 未测时该维度不参与加权 |
+| Stability | 30% | P6 成功率 / RTT / 抖动 |
+| AI Access | 30% | P3 / P4 / P5 |
+
+- 未测维度由 `isMeasured()` 判定，**不按 0 分计入**；权重在参与项上重新归一。
+- 快速档不测 P1 时，前端显示「速度 · 未测」+ 虚线空槽 + 分数「—」，结论句补「本次未测下载速度，速度分不参与总分」。
+
+### 17.2 P1 下载
+
+| 项 | 实现值 |
+|---|---|
+| 默认并发 | **1**（单流）；用户可在设置中调高，上限 16 |
+| 协议 | 强制 HTTP/1.1：`ForceAttemptHTTP2=false` + `TLSClientConfig.NextProtos=["http/1.1"]` |
+| 端点 | 4 条：`dl.google.com` 主/备、`redirector.gvt1.com`、`speed.cloudflare.com`（仅对照） |
+| 端点探测重试 | 最多 2 次，间隔 800 ms，仅瞬态错误 |
+| 判失败 | 连续失败 5 次（`dlMaxConsecFail`） |
+| 新增字段 | `ConnCount`（`httptrace.GotConn` 按 `LocalAddr` 去重）、`Stalled` |
+
+> 只关 Transport 层的 h2 不够：服务端经 ALPN 仍会选 h2 并回 SETTINGS 帧，客户端用 HTTP/1.x 解析会报 `malformed HTTP response`。必须在 TLS 层摘掉 h2。
+
+### 17.3 P2 YouTube
+
+- 三级真实请求：T1 `watch` 页 → T2 `i.ytimg` 缩略图 → T3 从页面抠 `*.googlevideo.com` 主机做边缘握手。
+- **不测吞吐**，`Mbps` 恒为 0；`mediaPath` 取值：`unavailable` / `page_only` / `thumb_only` / `gvs_handshake`。
+- 匿名探测被要求验证时判 `challenge`，文案明确「不代表你浏览器里看不了」。
+
+### 17.4 P3 / P4 采样
+
+- 3 次采样，间隔 **1.2 s**，`severity()` 取**最差**结论。
+- 卡片副标题显示 `n/m 次能打开`；混合时 headline 为「时好时坏」。
+- 证据链输出每次的 HTTP 状态分布 + 最差那次的关键响应头。
+
+### 17.5 长跑（P1 长时稳定性）
+
+| 项 | 实现值 |
+|---|---|
+| 触发 | `longRun=true` |
+| 默认时长 / 流量 / 并发 | 1800 s / 1024 MB / 1 |
+| 分窗 | 5 s（`dlWindow`） |
+| 断流判定 | 连续 **2** 个空窗（`dlStallWindows`） |
+| `StallAtMs` | 这串空窗的**第一个**窗口起点（回答「什么时候开始不行的」） |
+| `SustainPct` | 以全部窗口中位数的 20% 为有效阈值；中位数为 0 时直接给 0 |
+| 吞吐口径 | 均值 / P50 / P90 / 峰值只用非空窗；空窗由 `SustainPct` 单独表达 |
+
+### 17.6 单项复测（「只测这项」）
+
+- 入参：`Config.Only=true`，且 `Probes` 恰好 1 项；否则返回「单项复测必须且只能指定一个探测项」。
+- 行为：保留其它探测项的既有结果与上一轮 `Summary`，只替换目标项；**不重算总评**。
+- 标记：`Result.Only=true`，前端卡片显示「单项复测 · 不参与总评」。
+- 事件：`run_start` / `run_end` 均带 `only` 字段；`State.Only` 标记最近一次运行是否为单项复测。
+- 理由：总评代表一次完整运行；把不同时间窗口的结果混算在一起无法归因。
+
+### 17.7 出口身份
+
+- P3 通过 Cloudflare `/cdn-cgi/trace` 写入 `Region` / `Colo` / `Warp`，独立 8 s 预算，前置到页面 GET 之前。
+- 前端在卡片副标题下方显示 `出口 loc=JP · colo=NRT`；`Warp=true` 时用警告色徽章「WARP 出口」。
+
+### 17.8 取消与无结论
+
+- 取消时**不产出 Summary**（保持附录 A.3 口径）。
+- 所有端点都卡在连接层时同样不评分，返回可读原因，避免把「本地网络中断」渲染成「代理不可用」。

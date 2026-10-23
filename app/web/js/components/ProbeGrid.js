@@ -13,6 +13,8 @@ export function ProbeGrid({ onOpen, onProbeOnly }) {
     const results = state.results || [];
     // busyId 让「只测这项」按钮知道哪张卡正在复测，其余卡在复测期间禁用
     const opts = { running, busyId: state.onlyId };
+    // 分评设置里选中的探测项，在网格里高亮对应卡片
+    const selectedId = state.probeTarget;
     const ids = ORDER.filter((id) => results.some((r) => r.id === id) || running);
 
     // 初始态：给 6 张"预告卡"说明将测什么，而不是留一片空白。
@@ -55,6 +57,7 @@ export function ProbeGrid({ onOpen, onProbeOnly }) {
       }
       const r = results.find((x) => x.id === id);
       if (r) card.update(r, opts);
+      card.el.classList.toggle('is-selected', id === selectedId);
     }
     // 移除不在当前结果里的卡
     for (const [id, card] of cards) {

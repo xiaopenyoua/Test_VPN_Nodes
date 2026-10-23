@@ -22,7 +22,7 @@ export function SettingsSheet({ onClose }) {
   const el = h('div', { class: 'drawer-mask', onclick: (e) => { if (e.target === el) onClose(); } },
     h('aside', { class: 'drawer', role: 'dialog', 'aria-modal': 'true' },
       h('div', { class: 'drawer-head' },
-        h('div', { class: 'drawer-title' }, '探测设置'),
+        h('div', { class: 'drawer-title' }, '总评设置'),
         h('button', { class: 'btn btn-ghost btn-sm', onclick: onClose }, '关闭 ✕'),
       ),
       body,
@@ -86,6 +86,10 @@ export function SettingsSheet({ onClose }) {
   function render() {
     clear(body);
     const longRun = !!store.state.config.longRun;
+
+    // 先把边界说清楚：这里改的是完整探测，单项复测在分评页有自己的参数
+    body.appendChild(h('div', { class: 'settings-desc', style: 'margin-bottom:12px' },
+      '影响完整探测（P1–P6）。单项复测的时长/流量/并发在「分评」页单独设置。'));
 
     // —— 长时稳定性测试 ——
     body.appendChild(h('div', { class: 'settings-row settings-row--longrun' },

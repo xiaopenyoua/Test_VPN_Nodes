@@ -256,3 +256,63 @@ go build -trimpath -ldflags "-s -w" -o build/proxylens .
 - `docs/06-engine-design.md` 的权重表与采样参数需与实现同步（权重归一化、P3/P4 三次采样）
 - P2 YouTube 仍取不到分片直链，恒为 `degraded`——属于**已知未取到**，不是代理故障
 
+---
+
+## 附录 B · 第三轮修订：单项复测、总评/分评分页、桌面外壳
+
+### B.1 本轮修了什么
+
+| # | 变更 | 位置 |
+|---|---|---|
+| 1 | 「只测这项」接通：后端支持 `only=true`，保留其它 5 项结果、不重算总评 | `internal/config`、`internal/engine`、`internal/probe/types.go` |
+| 2 | 前端注入 `onProbeOnly`，卡片显示「单项复测 · 不参与总评」 | `web/js/components/ProbeGrid.js`、`ProbeCard.js`、`main.js` |
+| 3 | 新增「总评 / 分评」两个独立功能页（Tab 切换，方向键可切换） | `web/js/components/Tabs.js`、`main.js`、`ui.css` |
+| 4 | 总评页常驻提示：分评中有 N 项单项复测，总评未重算 | `main.js`、`ui.css` |
+| 5 | Electron 桌面外壳：sidecar 拉起、`PROXYLENS_READY` 解析、`hiddenInset` + vibrancy、退出收尸、electron-builder 打包 | `app/desktop/` |
+| 6 | Apple 视觉规范：自动主题（`prefers-color-scheme`）、标题栏安全区、动效曲线 | `docs/11-apple-visual.md`、`tokens.css`、`ui.css`、`core/theme.js` |
+| 7 | 四平台产物重建 | `app/dist/` |
+
+### B.2 实测证据
+
+**单项复测（API 层）**
+
+| 步骤 | 结果 |
+|---|---|
+| 完整快速档 | 6 项结果，总评 **69 / C·可用** |
+| 对 P6 发起 `only=true` | 结果仍为 **6 项**；P6 `only=true`、`RTT 182 → 204 ms`；总评仍 **69** |
+
+**单项复测（浏览器层）**
+
+- 分评页 6 张卡齐全，P6 复测后出现「单项复测 · 不参与总评」，其余 5 张卡结果原样保留；
+- 总评页出现「分评中有 1 项单项复测（P6），总评仍来自上一次完整探测，未重算。」；
+- 总分与三维分项（77 / 90 / 60）均未变化；
+- 控制台无报错。
+
+**P3 出口身份**
+
+- 分评页 P3 卡片实际显示 `出口 loc=JP · colo=NRT`，`region` / `colo` 已贯通到前端；
+- 本轮出口 `warp=false`，WARP 徽章未出现（符合预期）。
+
+**Electron 外壳**
+
+- `npm start` 启动后：Electron 主进程 + 渲染进程 + sidecar（`proxylens -no-open -emit-ready`）均在；
+- 通过 AppleScript 正常退出后，sidecar 进程同步退出，无残留；
+- `npm run dist:mac` 产出 `ProxyLens-1.0.0-arm64.dmg`（100 MB）与 `ProxyLens-1.0.0.dmg`（104 MB）；
+- 两个 app bundle 的 `Contents/Resources/bin/` 均包含 darwin-arm64 / darwin-amd64 两个 sidecar。
+
+**四平台产物**
+
+| 平台 | 大小 |
+|---|---|
+| darwin/arm64 | 6.8 MB |
+| darwin/amd64 | 7.3 MB |
+| windows/amd64 | 7.3 MB |
+| windows/arm64 | 6.7 MB |
+
+### B.3 仍未闭环
+
+- **30 分钟长跑未实跑**：本轮只验证了长跑代码路径与参数贯通，未消耗约 1 GB 流量做 30 分钟真实断流样本；需要用户择时确认后执行。
+- Windows 真机回归（仍仅交叉编译）。
+- macOS 安装包未签名（无 Developer ID），首次打开需右键「打开」或在「隐私与安全性」中放行。
+- P2 YouTube 仍取不到分片直链，恒为 `degraded`。
+

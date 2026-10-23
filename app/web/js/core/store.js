@@ -17,6 +17,19 @@ const initial = {
   tab: 'verdict',
   // 正在单项复测的探测项 ID；null 表示没有单项复测在跑
   onlyId: null,
+  // 分评页当前选中的探测项，以及它自己的复测参数。
+  // 与总评的 config 完全分开：改单项参数不会影响完整探测，反之亦然。
+  probeTarget: 'P1',
+  probeConfig: {
+    P1: { durationSec: 8, budgetMb: 20, concurrency: 1 },
+    P2: { timeoutSec: 15 },
+    P3: { timeoutSec: 15 },
+    P4: { timeoutSec: 15 },
+    P5: { timeoutSec: 15 },
+    P6: { timeoutSec: 15 },
+  },
+  // 上一次完整探测的耗时；单项复测不会覆盖它
+  summaryElapsedMs: 0,
   theme: localStorage.getItem('proxylens.theme') || 'auto',
   streamOk: true,
 };
@@ -66,6 +79,7 @@ export function resetForRun(cfg, exit) {
     error: '',
     detailId: null,
     onlyId: null,
+    summaryElapsedMs: 0,
     startedAt: Date.now(),
     elapsedMs: 0,
   });
