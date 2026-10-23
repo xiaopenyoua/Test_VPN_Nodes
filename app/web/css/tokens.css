@@ -1,130 +1,87 @@
-/* Design tokens —— framed-sheet / Apple
-   方向来自 draw.mjs --app --style framed-sheet（seed 1675105751）：
-   侧栏与顶栏共用一块冷灰底框，内容落在一张白色圆角“纸”上（inset 8px，1px 边，无投影）。
-   配色与字体按用户指定的 Apple 风格映射：systemGroupedBackground / label 三层灰 / 系统蓝。
-   彩色只在数据、状态与那一个主操作上。 */
-
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('/fonts/Inter-latin.woff2') format('woff2');
-}
+/* ProxyLens 设计令牌 —— 粘土拟态（Claymorphism）
+   唯一真源：design/v3/app.css。此处只放令牌，布局在 ui.css。
+   四处刻意偏离通用规范（白字压粉仅 2.6:1、弱化字不用 pink-400、
+   状态色用语义色而非糖果色、悬停统一向上浮），理由见交付说明。 */
 
 :root {
-  color-scheme: light;
+  /* 地面与粘土面：三层，靠明度与阴影区分，不用描边 */
+  --ground: linear-gradient(158deg, #fef3c7 0%, #fce7f3 46%, #ede9fe 100%);
+  --clay: linear-gradient(160deg, #ffffff 0%, #fdf2f8 100%);
+  --clay-2: linear-gradient(160deg, #fff6fa 0%, #fdeef6 100%);
+  --sunken: linear-gradient(160deg, #fbf0f5 0%, #f8e8f1 100%);
+  /* color-mix 需要不透明底来调淡，渐变不能参与混色 */
+  --clay-solid: #ffffff;
 
-  /* 底框（chrome）与纸（sheet）—— 深度只来自一档色调差 */
-  --chrome: #f5f5f7;
-  --sheet: #ffffff;
-  --sheet-edge: #e6e6eb;
+  --ink: #7d1f4a;
+  --ink-2: #a83264;
+  --ink-3: #9c4f70;
 
-  /* 卡片：纸张上的分组块，1px 边，无投影 */
-  --surface: #ffffff;
-  --raised: #f5f5f7;
-  --selected: #e8e8ed;
-  --border: #e6e6eb;
-  --rule: #f0f0f3;
-  --control: #d2d2d7;
+  --pink: #db2777;
+  --pink-deep: #be185d;
 
-  /* 文字三层，每层都在自己的底上 ≥4.5:1 */
-  --text: #1d1d1f;
-  --muted: #6e6e73;
-  --faint: #75757a;
+  --good: #0b7a52;
+  --good-bg: #d9f7e8;
+  --warn: #96540a;
+  --warn-bg: #fdeccb;
+  --bad: #a32a2a;
+  --bad-bg: #fbd9d6;
 
-  /* 唯一的数据色：系统蓝。状态色只用于状态 */
-  --accent: #0071e3;
-  --accent-ink: #0062c4;
-  --accent-wash: #eaf3fd;
-  --positive: #157f3c;
-  --negative: #d70015;
-  --warning: #9a5b00;
+  --line: rgba(146, 64, 106, .13);
+  --overlay: rgba(70, 26, 50, .34);
 
-  --pill-positive-bg: #e4f5e9;
-  --pill-positive-ink: #0d5a2b;
-  --pill-negative-bg: #ffe9ea;
-  --pill-negative-ink: #a3000f;
-  --pill-warning-bg: #fdf1dc;
-  --pill-warning-ink: #74450a;
-  --pill-neutral-bg: #f0f0f3;
-  --pill-neutral-ink: #3a3a3c;
-  --pill-neutral-muted: #6e6e73;
+  --r-xl: 34px;
+  --r-lg: 26px;
+  --r-md: 18px;
+  --r-pill: 999px;
 
-  /* 纸张 → 卡片 → 卡片内嵌套，半径逐级收小 */
-  --radius-sheet: 16px;
-  --radius-card: 12px;
-  --radius-control: 8px;
-  --radius-chip: 6px;
-  --radius-pill: 999px;
+  /* 四档阴影是粘土拟态的全部立体感来源：外投影定层高，内高光定圆弧 */
+  --sh-out: 8px 8px 18px rgba(146, 64, 106, .16), inset 3px 3px 7px rgba(255, 255, 255, .95), inset -3px -3px 7px rgba(146, 64, 106, .07);
+  --sh-sm: 4px 4px 10px rgba(146, 64, 106, .13), inset 2px 2px 5px rgba(255, 255, 255, .92), inset -2px -2px 4px rgba(146, 64, 106, .06);
+  --sh-in: inset 5px 5px 11px rgba(146, 64, 106, .15), inset -5px -5px 11px rgba(255, 255, 255, .95);
+  --sh-press: 2px 2px 5px rgba(146, 64, 106, .1), inset 8px 8px 16px rgba(146, 64, 106, .2), inset -4px -4px 9px rgba(255, 255, 255, .6);
 
-  --sidebar-width: 232px;
-  --topbar-h: 48px;
-  --sheet-inset: 8px;
-  --gap: 16px;
-  --section-gap: 28px;
-  --pad: 28px;
-  --card-pad: 20px;
-  --row-height: 44px;
-  --control-height: 32px;
-  --nav-row: 30px;
+  /* 带过冲的弹簧曲线：粘土要"弹一下"，线性缓动会显得是塑料 */
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
+  --t: 300ms;
 
-  --fs-h1: 22px;
-  --fs-section: 15px;
-  --fs-kpi: 40px;
-  --fs-value: 22px;
-  --fs-body: 13px;
-  --fs-small: 12px;
+  --round: ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Quicksand", "PingFang SC", system-ui, sans-serif;
+  --text: "PingFang SC", "Hiragino Sans GB", system-ui, -apple-system, sans-serif;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
-    'Helvetica Neue', 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    system-ui, sans-serif;
-
-  /* Apple 的动效曲线：标准 ease-in-out 与出场 ease-out */
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-1: 120ms;
-  --dur-2: 200ms;
-  --dur-3: 320ms;
-
-  /* 桌面外壳标题栏安全区：hiddenInset 下红绿灯占用的高度 */
-  --titlebar-h: 38px;
+  --dock-w: 236px;
+  --pad: 26px;
 }
 
-/* 暗色是同一套结构的镜像：底框比纸亮一档，卡片再亮一档。
-   灰阶保持真正的中性，不用蓝黑。 */
 [data-theme="dark"] {
-  color-scheme: dark;
+  --ground: linear-gradient(158deg, #2b2233 0%, #33243a 48%, #2a2338 100%);
+  --clay: linear-gradient(160deg, #43354d 0%, #3b2d45 100%);
+  --clay-2: linear-gradient(160deg, #4a3a53 0%, #3f3049 100%);
+  --sunken: linear-gradient(160deg, #33283c 0%, #2d2334 100%);
+  --clay-solid: #43354d;
 
-  --chrome: #232326;
-  --sheet: #17171a;
-  --sheet-edge: #2c2c30;
+  --ink: #fce7f3;
+  --ink-2: #f9a8d4;
+  --ink-3: #d3a8c0;
 
-  --surface: #1f1f22;
-  --raised: #2a2a2e;
-  --selected: #3a3a3e;
-  --border: #2c2c30;
-  --rule: #26262a;
-  --control: #3f3f44;
+  --pink: #f472b6;
+  --pink-deep: #ec4899;
 
-  --text: #f5f5f7;
-  --muted: #a1a1a6;
-  --faint: #8e8e93;
+  --good: #6ee7b7;
+  --good-bg: #1e4438;
+  --warn: #fcd34d;
+  --warn-bg: #4a3718;
+  --bad: #fca5a5;
+  --bad-bg: #4a2321;
 
-  --accent: #0a84ff;
-  --accent-ink: #409cff;
-  --accent-wash: #16283c;
-  --positive: #32d74b;
-  --negative: #ff6961;
-  --warning: #ffb340;
+  --line: rgba(255, 255, 255, .1);
+  --overlay: rgba(8, 4, 12, .6);
 
-  --pill-positive-bg: #14301f;
-  --pill-positive-ink: #6fe08c;
-  --pill-negative-bg: #3a1a1c;
-  --pill-negative-ink: #ff8b84;
-  --pill-warning-bg: #33260f;
-  --pill-warning-ink: #ffc46b;
-  --pill-neutral-bg: #2a2a2e;
-  --pill-neutral-ink: #f5f5f7;
-  --pill-neutral-muted: #a1a1a6;
+  --sh-out: 8px 8px 18px rgba(12, 6, 16, .5), inset 3px 3px 7px rgba(255, 255, 255, .09), inset -3px -3px 7px rgba(0, 0, 0, .3);
+  --sh-sm: 4px 4px 10px rgba(12, 6, 16, .45), inset 2px 2px 5px rgba(255, 255, 255, .08), inset -2px -2px 4px rgba(0, 0, 0, .28);
+  --sh-in: inset 5px 5px 11px rgba(0, 0, 0, .42), inset -5px -5px 11px rgba(255, 255, 255, .07);
+  --sh-press: 2px 2px 5px rgba(0, 0, 0, .3), inset 8px 8px 16px rgba(0, 0, 0, .5), inset -4px -4px 9px rgba(255, 255, 255, .06);
+}
+
+/* 桌面外壳（Electron）给红绿灯让出标题栏高度 */
+[data-shell="electron"] {
+  --pad-top: 30px;
 }

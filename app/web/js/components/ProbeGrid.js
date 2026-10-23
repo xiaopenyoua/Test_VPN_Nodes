@@ -1,73 +1,115 @@
 import { h, clear, NONE } from '../core/dom.js';
-import { ProbeCard } from './ProbeCard.js';
+import { store } from '../core/store.js';
+import { ORDER, NAME, hasOverride, resolveProbe } from '../core/probes.js';
+import { StatusBadge } from './StatusBadge.js';
+import { ProbePanel } from './ProbePanel.js';
 
-const ORDER = ['P3', 'P4', 'P5', 'P6', 'P2', 'P1'];
-
-// 探测卡网格：按 ID 复用实例，只更新变化的卡片。
+// 分评：六行，一行一项。行内就能展开「这项设置」，改完直接只测这一项，
+// 不用先去别处改参数再回来——这是「单项测试」这条需求的操作路径。
 export function ProbeGrid({ onOpen, onProbeOnly }) {
-  const el = h('div', { class: 'probe-grid' });
-  const cards = new Map();
+  const el = h('div', { class: 'rows rows-probe' });
+  const rows = new Map();
+  const panels = new Map();
+
+  for (const id of ORDER) {
+    const tag = h('span', { class: 'tag tag-idle' }, '待测');
+    const value = h('span', { class: 'row-value' }, NONE);
+    const setBtn = h('button', {
+      class: 'btn-sm',
+      type: 'button',
+      'aria-pressed': 'false',
+      onclick: (e) => {
+        e.stopPropagation();
+        const cur = store.state.openPanel;
+        store.patch({ openPanel: cur === id ? null : id, probeTarget: id });
+      },
+    }, '这项设置');
+    const onlyBtn = h('button', {
+      class: 'btn-sm',
+      type: 'button',
+      onclick: (e) => {
+        e.stopPropagation();
+        if (onlyBtn.disabled) return;
+        onProbeOnly(id);
+      },
+    }, '只测这项');
+
+    const row = h('div', {
+      class: 'row row-probe',
+      role: 'button',
+      tabindex: '0',
+      'aria-label': `${id} ${NAME[id]} 详情`,
+      onclick: (e) => {
+        if (e.target.closest('.row-act')) return;
+        onOpen(id);
+      },
+      onkeydown: (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(id); }
+      },
+    },
+      h('span', { class: 'row-id' }, id),
+      h('span', { class: 'row-name', title: NAME[id] }, NAME[id]),
+      tag,
+      value,
+      h('span', { class: 'row-act' }, setBtn, onlyBtn),
+    );
+
+    const panel = ProbePanel({ id, onProbeOnly });
+    panel.el.hidden = true;
+    // 面板紧跟在自己那一行之后：展开时读起来是「这一行 + 它的参数」
+    panel.el.id = `pset-${id}`;
+
+    rows.set(id, { row, tag, value, setBtn, onlyBtn });
+    panels.set(id, panel);
+    el.appendChild(row);
+    el.appendChild(panel.el);
+  }
 
   function render(state) {
     const running = state.phase === 'running';
     const results = state.results || [];
-    // busyId 让「只测这项」按钮知道哪张卡正在复测，其余卡在复测期间禁用
-    const opts = { running, busyId: state.onlyId };
-    // 分评设置里选中的探测项，在网格里高亮对应卡片
-    const selectedId = state.probeTarget;
-    const ids = ORDER.filter((id) => results.some((r) => r.id === id) || running);
 
-    // 初始态：给 6 张"预告卡"说明将测什么，而不是留一片空白。
-    // 不用骨架屏——骨架的语义是"数据在路上"，此刻并没有数据在路上。
-    if (results.length === 0 && !running) {
-      if (el.dataset.mode === 'preview') return;
-      clear(el); cards.clear();
-      el.dataset.mode = 'preview';
-      for (const id of ORDER) {
-        el.appendChild(h('div', { class: 'probe-preview', 'aria-hidden': 'false' },
-          h('span', { class: 'probe-id' }, id),
-          h('span', {}, nameOf(id)),
-        ));
-      }
-      return;
-    }
-
-    if (el.dataset.mode === 'preview') {
-      clear(el);
-      el.removeAttribute('data-mode');
-    }
-
-    if (results.length === 0 && running) {
-      clear(el); cards.clear();
-      for (const id of ORDER) {
-        const card = ProbeCard({ onOpen, onProbeOnly });
-        cards.set(id, card);
-        card.update({ id, name: nameOf(id), status: 'pending', headline: NONE, phases: {} }, opts);
-        el.appendChild(card.el);
-      }
-      return;
-    }
-
-    for (const id of ids) {
-      let card = cards.get(id);
-      if (!card) {
-        card = ProbeCard({ onOpen, onProbeOnly });
-        cards.set(id, card);
-        el.appendChild(card.el);
-      }
+    for (const id of ORDER) {
       const r = results.find((x) => x.id === id);
-      if (r) card.update(r, opts);
-      card.el.classList.toggle('is-selected', id === selectedId);
-    }
-    // 移除不在当前结果里的卡
-    for (const [id, card] of cards) {
-      if (!ids.includes(id)) { card.el.remove(); cards.delete(id); }
+      const ui = rows.get(id);
+      const open = state.openPanel === id;
+
+      clear(ui.tag);
+      if (r) {
+        const badge = StatusBadge(r.status);
+        ui.tag.className = badge.className;
+        ui.tag.textContent = badge.textContent;
+      } else {
+        ui.tag.className = 'tag tag-idle';
+        ui.tag.textContent = running ? '排队中' : '待测';
+      }
+
+      clear(ui.value);
+      ui.value.appendChild(document.createTextNode(r ? (r.headline || NONE) : NONE));
+      // 首屏不出现裸状态码：状态码是证据，不是给用户看的语言，只在详情里呈现
+      const sub = r ? (r.subline || '').replace(/\s*·\s*HTTP\s*\d{3}/gi, '') : '';
+      if (sub) ui.value.appendChild(h('small', {}, sub));
+      if (r && r.only) ui.value.appendChild(h('small', {}, '单项复测 · 不参与总评'));
+      if (hasOverride(state.probeConfig, id)) ui.value.appendChild(h('small', {}, '这项参数已单独调整'));
+
+      const busy = state.onlyId === id;
+      ui.onlyBtn.disabled = running;
+      ui.onlyBtn.textContent = busy ? '测试中…' : '只测这项';
+
+      ui.setBtn.setAttribute('aria-pressed', String(open));
+      ui.setBtn.textContent = open ? '收起' : '这项设置';
+
+      const panel = panels.get(id);
+      panel.el.hidden = !open;
+      if (open) panel.render(state);
     }
   }
 
-  return { el, render };
-}
+  // 供「总评 → 点某颗卵石」跳过来时定位到那一行
+  function focusProbe(id) {
+    const ui = rows.get(id);
+    if (ui) ui.row.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
 
-function nameOf(id) {
-  return { P1: 'Google 大文件下载', P2: 'YouTube 链路', P3: 'ChatGPT 网页', P4: 'Gemini 网页', P5: 'OpenAI API', P6: '国际链路基线' }[id] || id;
+  return { el, render, focusProbe };
 }

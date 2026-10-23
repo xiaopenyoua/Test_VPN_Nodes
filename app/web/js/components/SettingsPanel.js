@@ -1,187 +1,230 @@
-import { h, fmt } from '../core/dom.js';
+import { h, clear, fmt } from '../core/dom.js';
 import { store } from '../core/store.js';
-import { Toggle, setToggle } from './Toggle.js';
+import { LONG } from '../core/probes.js';
 
-const FIELDS = [
-  { key: 'concurrency', label: '并发连接数', desc: '默认 1 条流，等于你点「下载」时的真实速度；调高会把多流带宽叠加，数字更好看但你实际拿不到', min: 1, max: 16 },
-  { key: 'budgetMb', label: '流量预算 (MB)', desc: '单次下载测试最多消耗的流量', min: 4, max: 4096 },
-  { key: 'durationSec', label: '下载时长 (秒)', desc: '大文件下载的最长持续时间', min: 3, max: 120 },
-  { key: 'timeoutSec', label: '单请求超时 (秒)', desc: '任一 HTTP 请求的超时上限', min: 5, max: 60 },
+const MODES = [
+  { key: 'system', label: '系统代理' },
+  { key: 'custom', label: '自定义' },
+  { key: 'direct', label: '直连对照' },
 ];
 
-// 长跑是「另一个量纲」的测试：固定 30 分钟、固定单流。
-// 这三个值必须一起改动，否则会出现「勾了长跑但 8 秒就结束」或
-// 「跑了 20 分钟却因为 20MB 预算被提前截断」这类看起来像节点断流的假象。
-const LONG_DURATION_SEC = 1800;
-const LONG_MIN_BUDGET_MB = 1024;
-const LONG_MAX_BUDGET_MB = 4096;
-const SHORT_FALLBACK = { preset: 'quick', concurrency: 1, budgetMb: 20, durationSec: 8 };
+// 档位不是另一个开关，它只是把下面三项一次性填成常用组合。
+// 数值与后端 presetDefaults 一致，否则「深度」和「快速」跑出来一模一样。
+const PRESETS = [
+  { key: 'quick', label: '快速', defaults: { concurrency: 1, budgetMb: 20, durationSec: 8, timeoutSec: 15 } },
+  { key: 'standard', label: '标准', defaults: { concurrency: 1, budgetMb: 64, durationSec: 15, timeoutSec: 20 } },
+  { key: 'deep', label: '深度', defaults: { concurrency: 1, budgetMb: 160, durationSec: 30, timeoutSec: 25 } },
+];
 
-// 设置页：只放完整探测（P1–P6）的高级参数。
-// 单项复测的时长/流量/并发在「分评」页单独设置，两边互不影响。
+// 折叠行里不能出现明文凭据
+function maskUrl(u) {
+  return String(u || '').replace(/\/\/[^/@]+@/, '//***@');
+}
+
+function proxyValid(v) {
+  if (!v.trim()) return { ok: true };
+  if (!/^(https?|socks5h?):\/\//i.test(v.trim())) return { ok: false, msg: '需要以 http:// https:// socks5:// socks5h:// 开头' };
+  if (!/:\d{1,5}\s*$/.test(v.trim())) return { ok: false, msg: '缺少端口，例如 127.0.0.1:7890' };
+  return { ok: true };
+}
+
+const NUM_FIELDS = [
+  { key: 'timeoutSec', label: '单请求超时', unit: '秒', min: 5, max: 60, desc: '任一 HTTP 请求的超时上限' },
+  { key: 'concurrency', label: '并发连接数', unit: '条', min: 1, max: 16, desc: '默认 1 条流，等于你点下载时的真实速度；调高是多流叠加，数字好看但你实际拿不到' },
+  { key: 'budgetMb', label: '流量预算', unit: 'MB', min: 4, max: 4096, desc: '一次下载最多消耗多少流量' },
+];
+
+// 设置页只放六项共用的整体参数。
+// 单次时长与长跑属于 P1，不放这里——只有它跑下载，五个网页探测拿时长没有意义。
 export function SettingsPanel() {
-  let shortSnapshot = null;
-  const inputs = new Map();
-  const descs = new Map();
-  const estimate = h('div', { class: 'settings-estimate' });
+  const modeSeg = h('div', { class: 'seg seg-mode', role: 'group', 'aria-label': '代理来源' });
+  const modeBtns = new Map();
+  for (const m of MODES) {
+    const b = h('button', {
+      type: 'button',
+      onclick: () => patchConfig({ mode: m.key }),
+    }, m.label);
+    modeBtns.set(m.key, b);
+    modeSeg.appendChild(b);
+  }
 
-  const toggle = Toggle({
-    checked: false,
-    label: '长时稳定性测试',
-    onChange: (on) => toggleLongRun(on),
+  const urlInput = h('input', {
+    class: 'text-input',
+    type: 'text',
+    spellcheck: 'false',
+    autocomplete: 'off',
+    placeholder: 'http://127.0.0.1:7890',
+    oninput: (e) => {
+      const val = e.target.value;
+      const cfg = { ...store.state.config, proxyUrl: val };
+      // 输入框永不禁用：一旦输入内容即视为自定义代理；清空则回到系统代理语义
+      if (val.trim() && cfg.mode !== 'custom') cfg.mode = 'custom';
+      if (!val.trim() && cfg.mode === 'custom') cfg.mode = 'system';
+      store.patch({ config: cfg });
+    },
   });
 
-  function measureMbps() {
-    // 预估只用真实测出来的数字：P1 是同一个下载口径，没有就退到 P6 的链路吞吐。
-    const pick = (id) => {
-      const r = (store.state.results || []).find((x) => x.id === id);
-      return r && r.mbps > 0 ? r.mbps : 0;
-    };
-    return pick('P1') || pick('P6') || 0;
+  const urlDesc = h('span', { class: 'field-desc' }, 'http / https / socks5，例如 http://127.0.0.1:7890');
+  const exitLine = h('div', { class: 'field-desc' });
+
+  const presetSeg = h('div', { class: 'seg seg-preset', role: 'group', 'aria-label': '强度预设' });
+  const presetBtns = new Map();
+  for (const p of PRESETS) {
+    const b = h('button', {
+      type: 'button',
+      title: `填入：超时 ${p.defaults.timeoutSec}s · 并发 ${p.defaults.concurrency} · 预算 ${p.defaults.budgetMb} MB`,
+      onclick: () => patchConfig({ preset: p.key, ...p.defaults }),
+    }, p.label);
+    presetBtns.set(p.key, b);
+    presetSeg.appendChild(b);
   }
 
-  function patchConfig(partial) {
-    store.patch({ config: { ...store.state.config, ...partial } });
-  }
-
-  // 打开长跑前先记住用户当时的短测参数，关闭时原样还回去（默认 quick 即 8 秒 / 20MB）。
-  // 不做"关闭就变回 quick"的硬编码——那会把用户选的「深度」档静默降级。
-  function toggleLongRun(on) {
-    const cfg = store.state.config;
-    if (on) {
-      shortSnapshot = {
-        preset: cfg.preset,
-        concurrency: cfg.concurrency,
-        budgetMb: cfg.budgetMb,
-        durationSec: cfg.durationSec,
-      };
-      const mbps = measureMbps();
-      // 预算要盖住预估流量，否则 30 分钟的测试会先被预算截断，指标上全是 0 窗口。
-      const need = mbps > 0
-        ? Math.min(LONG_MAX_BUDGET_MB, Math.max(LONG_MIN_BUDGET_MB, Math.ceil((mbps * LONG_DURATION_SEC) / 8 * 1.05)))
-        : LONG_MIN_BUDGET_MB;
-      patchConfig({ longRun: true, durationSec: LONG_DURATION_SEC, concurrency: 1, budgetMb: need });
-    } else {
-      const back = shortSnapshot || SHORT_FALLBACK;
-      shortSnapshot = null;
-      patchConfig({ longRun: false, ...back });
-    }
-  }
-
-  const rows = FIELDS.map((f) => {
+  const inputs = new Map();
+  const numRows = NUM_FIELDS.map((f) => {
     const input = h('input', {
-      class: 'input num-input',
+      class: 'num-input',
       type: 'number',
       min: f.min,
       max: f.max,
+      inputmode: 'numeric',
       oninput: (e) => {
-        let v = parseInt(e.target.value, 10);
-        if (Number.isNaN(v)) return;
-        v = Math.max(f.min, Math.min(parseInt(input.max, 10) || f.max, v));
-        patchConfig({ [f.key]: v });
+        const raw = parseInt(e.target.value, 10);
+        if (Number.isNaN(raw)) return;
+        patchConfig({ [f.key]: Math.max(f.min, Math.min(f.max, raw)) });
+      },
+      onblur: (e) => {
+        const v = parseInt(e.target.value, 10);
+        if (Number.isNaN(v)) { e.target.value = store.state.config[f.key]; return; }
+        const clamped = Math.max(f.min, Math.min(f.max, v));
+        if (clamped !== v) e.target.value = clamped;
       },
     });
-    const desc = h('div', { class: 'settings-desc' }, f.desc);
     inputs.set(f.key, input);
-    descs.set(f.key, desc);
-    return h('div', { class: 'settings-row' },
-      h('div', { class: 'settings-text' },
-        h('div', { class: 'settings-label' }, f.label),
-        desc,
+    return h('div', { class: 'field' },
+      h('div', { class: 'field-copy' },
+        h('span', { class: 'field-name' }, f.label),
+        h('span', { class: 'field-desc' }, f.desc),
       ),
       input,
+      h('span', { class: 'unit' }, f.unit),
     );
   });
 
   const el = h('div', { class: 'view' },
-    h('section', { class: 'setting-row' },
-      h('div', { class: 'setting-text' },
-        h('h2', { class: 'setting-label' }, '长时稳定性测试'),
-        h('p', { class: 'setting-desc' }, '专门抓「能连上但下载几十秒就断」的节点；单流跑满时长，看的是持续性而不是峰值。'),
-      ),
-      h('div', { class: 'setting-panel' },
-        h('div', { class: 'settings-row settings-row--longrun' },
-          h('div', { class: 'settings-text' },
-            h('div', { class: 'settings-label' }, '开启 30 分钟长跑'),
-            h('div', { class: 'settings-desc' }, '固定 30 分钟、固定单流；关闭后回到你原来的短测参数。'),
+    h('div', { class: 'block' },
+      h('h3', {}, '整体设置'),
+      h('p', { class: 'hint' }, '这里是六项共用的设置，一次完整探测全按它跑。某一项要另调，去分评页那一行点「这项设置」——只覆盖那一项，不动这里。'),
+      h('div', { class: 'list' },
+        h('div', { class: 'field' },
+          h('div', { class: 'field-copy' },
+            h('span', { class: 'field-name' }, '代理来源'),
+            h('span', { class: 'field-desc' }, '选系统代理时直接用操作系统的设置，不读下面的地址'),
           ),
-          toggle,
+          modeSeg,
         ),
-        estimate,
-      ),
-    ),
-    h('section', { class: 'setting-row' },
-      h('div', { class: 'setting-text' },
-        h('h2', { class: 'setting-label' }, '数值参数'),
-        h('p', { class: 'setting-desc' }, '这些值决定一次完整探测跑多久、花多少流量。单项复测在「分评」页有自己的参数。'),
-      ),
-      h('div', { class: 'setting-panel' }, ...rows),
-    ),
-    h('section', { class: 'setting-row' },
-      h('div', { class: 'setting-text' },
-        h('h2', { class: 'setting-label' }, '评分口径'),
-        h('p', { class: 'setting-desc' }, '可用性是闸门：某一项不可用会直接封顶总分，而不是按权重扣几分。'),
-      ),
-      h('div', { class: 'setting-panel' },
-        h('div', { class: 'settings-row' },
-          h('div', { class: 'settings-text' },
-            h('div', { class: 'settings-label' }, '速度 40% + 稳定性 30% + AI 可用性 30%'),
-            h('div', { class: 'settings-desc' }, '探测目标固定为官方站点，不支持自定义 URL（避免被当成内网探测跳板）。'),
+        h('div', { class: 'field' },
+          h('div', { class: 'field-copy' },
+            h('span', { class: 'field-name' }, '代理地址'),
+            urlDesc,
           ),
+          urlInput,
         ),
       ),
+      exitLine,
     ),
+
+    h('div', { class: 'block' },
+      h('h3', {}, '运行参数'),
+      h('p', { class: 'hint' }, '这三项是六项共用的默认值。某一项要特殊对待，去分评页那一行的「这项设置」里改，改完标「已覆盖」。'),
+      h('div', { class: 'list' },
+        ...numRows,
+        h('div', { class: 'field' },
+          h('div', { class: 'field-copy' },
+            h('span', { class: 'field-name' }, '强度预设'),
+            h('span', { class: 'field-desc' }, '只是把上面三项一次填成常用组合，本身不参与探测'),
+          ),
+          presetSeg,
+        ),
+      ),
+    ),
+
+    h('div', { class: 'block' },
+      h('h3', {}, '评分口径'),
+      h('div', { class: 'list' },
+        h('div', { class: 'field' },
+          h('div', { class: 'field-copy' },
+            h('span', { class: 'field-name' }, '速度 40% + 稳定性 30% + AI 可用性 30%'),
+            h('span', { class: 'field-desc' }, '可用性是闸门：某一项不可用会直接封顶总分，而不是按权重扣几分。所以不会出现「85 分但 ChatGPT 打不开」。'),
+          ),
+        ),
+      ),
+    ),
+
+    h('p', { class: 'foot' },
+      `「单次时长」和「长时稳定性」不在这里，因为只有 P1 跑下载。它们属于 P1 自己——去「分评 · P1 · 这项设置」里开启 ${LONG.durationSec / 60} 分钟长跑。`),
   );
 
-  function sync() {
-    const cfg = store.state.config;
-    const longRun = !!cfg.longRun;
-    setToggle(toggle, longRun);
-
-    for (const f of FIELDS) {
-      const input = inputs.get(f.key);
-      const desc = descs.get(f.key);
-      let value = cfg[f.key];
-      let text = f.desc;
-      let max = f.max;
-      let disabled = false;
-
-      if (longRun && f.key === 'durationSec') {
-        value = LONG_DURATION_SEC;
-        max = LONG_DURATION_SEC;
-        disabled = true;
-        text = '长跑固定 30 分钟：短于此暴露不出「几十秒后断流」';
-      } else if (longRun && f.key === 'concurrency') {
-        value = 1;
-        disabled = true;
-        text = '单流才等于你点「下载」时的真实体感';
-      } else if (longRun && f.key === 'budgetMb') {
-        text = '长跑需要跑满 30 分钟，预算太少会被提前截断';
-      }
-
-      input.max = max;
-      input.disabled = disabled;
-      // 正在输入的框不回写，否则光标会被推到末尾
-      if (document.activeElement !== input) input.value = value;
-      desc.textContent = text;
-    }
-
-    estimate.hidden = !longRun;
-    if (!longRun) return;
-    const mbps = measureMbps();
-    if (!mbps) {
-      estimate.textContent = '流量预估：未知（首次运行后可见）';
-      estimate.classList.remove('is-warn');
-      return;
-    }
-    const mb = (mbps * cfg.durationSec) / 8;
-    const heavy = mb > 1024;
-    estimate.textContent = heavy
-      ? `本次将消耗约 ${fmt.traffic(mb)} 流量，注意流量套餐`
-      : `按当前实测带宽约消耗 ${fmt.traffic(mb)}`;
-    estimate.classList.toggle('is-warn', heavy);
+  function patchConfig(partial) {
+    store.patch({ config: { ...store.state.config, ...partial } });
+    render();
   }
 
-  sync();
-  return { el, render: sync };
+  function render() {
+    const st = store.state;
+    const cfg = st.config;
+    const running = st.phase === 'running';
+
+    for (const [k, b] of modeBtns) {
+      b.setAttribute('aria-pressed', String(cfg.mode === k));
+      b.disabled = running;
+    }
+
+    urlInput.disabled = running || cfg.mode === 'direct';
+    urlInput.value = document.activeElement === urlInput ? urlInput.value : cfg.proxyUrl;
+    urlInput.placeholder = cfg.mode === 'direct'
+      ? '直连模式：忽略所有代理设置'
+      : cfg.mode === 'custom'
+        ? 'socks5h://127.0.0.1:7890  或  http://user:pass@host:8080'
+        : '可留空走系统代理；也可直接粘贴代理地址';
+
+    const v = proxyValid(cfg.proxyUrl);
+    const showErr = cfg.mode === 'custom' && !v.ok;
+    urlInput.classList.toggle('is-error', showErr);
+    urlDesc.className = 'field-desc' + (showErr ? ' is-error' : '');
+    urlDesc.textContent = showErr ? v.msg : 'http / https / socks5，例如 http://127.0.0.1:7890';
+
+    for (const f of NUM_FIELDS) {
+      const input = inputs.get(f.key);
+      input.disabled = running;
+      if (document.activeElement !== input) input.value = cfg[f.key];
+    }
+
+    // 预设高亮只在数值真的等于那套组合时点亮，否则「快速」会替一组自定义数值背书
+    for (const p of PRESETS) {
+      const same = Object.entries(p.defaults).every(([k, val]) => cfg[k] === val);
+      presetBtns.get(p.key).setAttribute('aria-pressed', String(same));
+      presetBtns.get(p.key).disabled = running;
+    }
+
+    // 出网路径是「结果可解释」的前提，常驻显示
+    const exit = st.exit;
+    clear(exitLine);
+    exitLine.className = 'field-desc';
+    if (!exit) {
+      exitLine.textContent = cfg.mode === 'custom'
+        ? `当前：自定义代理 · ${maskUrl(cfg.proxyUrl) || '未填写地址'}`
+        : cfg.mode === 'direct'
+          ? '当前：直连对照 · 忽略所有代理设置'
+          : '当前：系统代理 · 启动探测后显示实际出网路径';
+      return;
+    }
+    const parts = ['出网路径 · ' + (exit.detail || '未知')];
+    for (const w of (exit.warnings || [])) parts.push('注意 · ' + w);
+    exitLine.textContent = parts.join('　|　');
+    if ((exit.warnings || []).length) exitLine.style.color = 'var(--warn)';
+    else exitLine.style.color = '';
+  }
+
+  render();
+  return { el, render };
 }

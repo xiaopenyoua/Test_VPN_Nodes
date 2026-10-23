@@ -1,9 +1,9 @@
 // 单一状态源：只做浅合并 + 订阅通知，避免引入框架。
 const initial = {
   phase: 'idle', // idle | running | done | cancelled | error
-  // longRun 打开后由后端（config.Normalize）把时长/流量/并发收敛成长跑口径；
-  // 前端也会同步写入，保证「关掉开关能回到短测参数」有据可依。
-  config: { mode: 'system', proxyUrl: '', preset: 'quick', concurrency: 1, budgetMb: 20, durationSec: 8, timeoutSec: 15, longRun: false },
+  // 整体设置：六项共用，一次完整探测（P1–P6）就按这里的值跑。
+  // 长跑不在其中——长跑只有 P1 一个观测对象，属于 P1 的单项设置。
+  config: { mode: 'system', proxyUrl: '', preset: 'quick', concurrency: 1, budgetMb: 20, durationSec: 8, timeoutSec: 15 },
   exit: null,
   env: null,
   results: [],
@@ -13,23 +13,25 @@ const initial = {
   elapsedMs: 0,
   error: '',
   detailId: null,
-  // 三个独立目的地：总评来自一次完整运行，分评展示每一项的当前结果，设置放完整探测的高级参数
+  // 四个独立目的地：总评来自一次完整运行，分评展示每一项的当前结果，
+  // 带宽是独立的大文件长跑，设置放完整探测的高级参数
   tab: 'verdict',
   // 正在单项复测的探测项 ID；null 表示没有单项复测在跑
   onlyId: null,
-  // 分评页当前选中的探测项，以及它自己的复测参数。
-  // 与总评的 config 完全分开：改单项参数不会影响完整探测，反之亦然。
+  // 分评页当前选中的探测项，以及它自己的参数「覆盖项」。
+  // 只存被显式改过的字段：空对象（或字段缺失）= 跟随整体设置。
+  // 这样「改整体」能自然扩散到没单独调过的项，不必逐个同步六份副本。
   probeTarget: 'P1',
-  probeConfig: {
-    P1: { durationSec: 8, budgetMb: 20, concurrency: 1 },
-    P2: { timeoutSec: 15 },
-    P3: { timeoutSec: 15 },
-    P4: { timeoutSec: 15 },
-    P5: { timeoutSec: 15 },
-    P6: { timeoutSec: 15 },
-  },
+  probeConfig: {},
+  // 分评页当前展开「这项设置」的探测项；null 表示全部收起，一次只开一个
+  openPanel: null,
   // 上一次完整探测的耗时；单项复测不会覆盖它
   summaryElapsedMs: 0,
+  // 独立带宽长跑：状态与六项结果完全隔离，跑两小时也不会覆盖分评里的 P1
+  bandwidth: null,
+  // 带宽页自己的参数。和 config（六项共用）分开存：
+  // 这边是"小时 / GB"，那边是"秒 / MB"，混成一份会让两边互相污染。
+  bwConfig: { durationSec: 1800, budgetMB: 8192, concurrency: 1 },
   theme: localStorage.getItem('proxylens.theme') || 'dark',
   streamOk: true,
 };

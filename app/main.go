@@ -35,6 +35,9 @@ func main() {
 		// 外壳据此拿到真实端口与 token。不这么做就只能去正则匹配人类可读日志，
 		// 一次改文案就把启动流程弄断。
 		emitReady = flag.Bool("emit-ready", false, "启动就绪后向 stdout 输出一行 JSON（供桌面外壳解析）")
+		// devDir 只服务于改样式的迭代：把前端资源改为从磁盘读取，刷新即生效。
+		// 不传这个参数时走的仍然是内嵌资源，与发布产物完全一致。
+		devDir = flag.String("dev", "", "开发模式：从指定目录读取前端资源，改了不用重新编译")
 	)
 	flag.Parse()
 
@@ -49,6 +52,10 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "读取内嵌资源失败:", err)
 		os.Exit(1)
+	}
+	// 开发模式下换用磁盘目录；os.DirFS 返回的已经是 web/ 的根，不能再套一层 Sub
+	if *devDir != "" {
+		webFS = os.DirFS(*devDir)
 	}
 
 	eng := engine.New()

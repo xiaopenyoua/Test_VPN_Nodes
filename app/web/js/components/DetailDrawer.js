@@ -30,7 +30,7 @@ export function DetailDrawer({ onClose }) {
     body.appendChild(h('div', { style: 'display:flex;align-items:center;gap:12px;flex-wrap:wrap' },
       StatusBadge(result.status),
       h('span', { class: 'probe-value' }, result.headline || NONE),
-      result.attribution ? h('span', { class: 'badge', dataset: { status: 'question' } }, '归因：' + (ATTR[result.attribution] || result.attribution)) : null,
+      result.attribution ? h('span', { class: 'tag tag-idle' }, '归因：' + (ATTR[result.attribution] || result.attribution)) : null,
     ));
 
     if (result.nextStep) {
@@ -99,7 +99,7 @@ export function DetailDrawer({ onClose }) {
       ));
     }
     if (result.error) {
-      body.appendChild(h('div', { class: 'degraded-flag', style: 'background:var(--pill-negative-bg);color:var(--pill-negative-ink)' },
+      body.appendChild(h('div', { class: 'degraded-flag' },
         h('div', { class: 'settings-label' }, '错误'),
         h('div', { class: 'settings-desc', style: 'color:inherit;word-break:break-all' }, result.error),
       ));

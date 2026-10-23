@@ -34,6 +34,28 @@ const (
 // AllProbes 是默认执行顺序。
 var AllProbes = []string{ProbeChatGPT, ProbeGemini, ProbeOpenAI, ProbeBase, ProbeYouTube, ProbeGoogle}
 
+// ── 独立带宽长跑的量纲 ─────────────────────────────────────────────
+//
+// 这一档刻意不属于六项综合测试。它回答的问题不是"那一刻能跑多快"，
+// 而是"连续跑两小时，这条链路还能不能一直跑到该有的速度"——
+// 后者才对应"挂了一晚上下载，早上起来发现只下了 200 MB"这类真实遭遇。
+//
+// 正因为问的是另一件事，它的量纲也不是六项那一套：
+// 六项的 1800 秒 / 4096 MB 上限是给"顺手测一下"设的，套在长跑上
+// 会让用户填的 2 小时静默变成 30 分钟、填的 20 GB 静默变成 4 GB。
+const (
+	MaxBandwidthDurationSec = 14400  // 4 小时
+	MaxBandwidthBudgetMB    = 102400 // 100 GB
+)
+
+// 带宽长跑的默认值：30 分钟 / 8 GB。
+// 8 GB 对应约 36 Mbps 的持续吞吐能跑满全程——既不至于开局就被预算截断，
+// 也不会让第一次点开这一页的人一上手就吃掉几十 GB 流量。
+const (
+	bandwidthDefaultDurationSec = 1800
+	bandwidthDefaultBudgetMB    = 8192
+)
+
 // Config 是一次运行的完整入参。
 type Config struct {
 	Mode        string   `json:"mode"`
@@ -55,6 +77,14 @@ type Config struct {
 	// 保留其它探测项的既有结果，也不重算总评。
 	// 总评代表一次完整运行；把不同时间窗口的结果混算在一起无法归因。
 	Only bool `json:"only"`
+
+	// Bandwidth 打开「独立带宽长跑」：只跑大文件下载，但与六项里的 P1
+	// 完全隔离——不写入 Results、不参与总评、结果单独占一个状态位。
+	//
+	// 为什么单独开一个开关而不是复用 Only+longRun：Only 是"六项之一复测"，
+	// 它会把结果写回 P1 那张卡；长跑跑两小时之后，分评页上那张 P1 卡
+	// 就再也不是"综合测试里测出来的 P1"了。两件事必须分开存。
+	Bandwidth bool `json:"bandwidth"`
 }
 
 // Normalize 填充默认值并做范围收敛。
@@ -62,6 +92,14 @@ func (c *Config) Normalize() {
 	c.Mode = strings.ToLower(strings.TrimSpace(c.Mode))
 	if c.Mode == "" {
 		c.Mode = ModeSystem
+	}
+	c.ProxyURL = strings.TrimSpace(c.ProxyURL)
+	// 带宽长跑是另一套量纲，走完自己那条分支直接返回。
+	// 让它继续往下走会被六项的 1800 秒 / 4096 MB 夹死——
+	// 用户填的 2 小时会静默变成 30 分钟，而界面上还显示着"2 小时"。
+	if c.Bandwidth {
+		c.normalizeBandwidth()
+		return
 	}
 	switch c.Preset {
 	case PresetStandard, PresetDeep:
@@ -116,6 +154,46 @@ func (c *Config) Normalize() {
 	}
 	c.ProxyURL = strings.TrimSpace(c.ProxyURL)
 	c.Probes = normalizeProbes(c.Probes)
+}
+
+// normalizeBandwidth 收敛独立带宽长跑的参数。
+//
+// 和六项那套的唯一区别是上限：时长按小时（最长 4 小时）、流量按 GB（最多 100 GB）。
+// 其余口径刻意与 P1 保持一致（单流优先、Range 流式、不落盘），
+// 否则"独立长跑"和"综合测试里的下载"会变成两把量不出同一件事的尺子。
+func (c *Config) normalizeBandwidth() {
+	if c.Concurrency <= 0 {
+		// 长跑要抓的是"某一条流会不会断"。多流并发时只要还有一条在跑，
+		// 总吞吐就看不出来，断流反而被别人的流量盖住。
+		c.Concurrency = 1
+	}
+	if c.Concurrency > 16 {
+		c.Concurrency = 16
+	}
+	if c.DurationSec <= 0 {
+		c.DurationSec = bandwidthDefaultDurationSec
+	}
+	if c.DurationSec > MaxBandwidthDurationSec {
+		c.DurationSec = MaxBandwidthDurationSec
+	}
+	if c.BudgetMB <= 0 {
+		c.BudgetMB = bandwidthDefaultBudgetMB
+	}
+	if c.BudgetMB > MaxBandwidthBudgetMB {
+		c.BudgetMB = MaxBandwidthBudgetMB
+	}
+	if c.TimeoutSec <= 0 {
+		c.TimeoutSec = 20
+	}
+	if c.TimeoutSec > 60 {
+		c.TimeoutSec = 60
+	}
+	// 带宽长跑不是六项之一：不跑任何综合探测项，也不允许参与总评。
+	c.Probes = nil
+	c.Only = false
+	// 长时间本身就是这一档的全部意义，所以恒按长跑口径分析
+	// （分窗、断流定位、有效吞吐占比）。短测那套均值在这里只会掩盖问题。
+	c.LongRun = true
 }
 
 type defaults struct {

@@ -11,13 +11,13 @@ export function drawSpeed(canvas, samples, opts = {}) {
 
   const pts = (samples || []).filter((s) => typeof s.mbps === 'number');
   const cs = getComputedStyle(document.documentElement);
-  const grid = cs.getPropertyValue('--rule').trim() || '#161616';
-  const line = opts.color || cs.getPropertyValue('--accent').trim() || '#c6f24e';
-  const text = cs.getPropertyValue('--faint').trim() || '#949494';
+  const grid = cs.getPropertyValue('--line').trim() || 'rgba(146,64,106,.13)';
+  const line = opts.color || cs.getPropertyValue('--pink').trim() || '#db2777';
+  const text = cs.getPropertyValue('--ink-3').trim() || '#9c4f70';
 
   if (pts.length < 2) {
     ctx.fillStyle = text;
-    ctx.font = '12px Inter, sans-serif';
+    ctx.font = '12px ui-rounded, "PingFang SC", system-ui, sans-serif';
     ctx.fillText(opts.empty || '等待采样…', 8, cssH / 2);
     return;
   }
@@ -59,7 +59,7 @@ export function drawSpeed(canvas, samples, opts = {}) {
 
   if (opts.labels) {
     ctx.fillStyle = text;
-    ctx.font = '12px Inter, sans-serif';
+    ctx.font = '12px ui-rounded, "PingFang SC", system-ui, sans-serif';
     ctx.fillText(`${maxV.toFixed(0)} Mbps`, padL, 10);
     ctx.fillText('0', padL, cssH - 3);
   }
