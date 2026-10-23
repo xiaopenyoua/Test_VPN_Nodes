@@ -88,11 +88,21 @@ type DownloadOpts struct {
 	// 为 false 时执行路径与历史版本完全一致（短测不该因为长跑改造而改变结论）。
 	LongRun  bool
 	OnSample func(Sample)
+	// OnWindow 只在 LongRun 下触发，每个 dlWindow 窗口结束时报一次，
+	// 携带的是**这一整窗的平均速率**与累计字节。
+	//
+	// 为什么长跑必须再给一条窗口通道：OnSample 是 250ms 的瞬时值，
+	// 它会把「代理缓冲区一次性冲刷」量化成 78 Mbps 的尖峰，而同一段
+	// 真实下载的总字节/总时长只有 9.8 Mbps。用瞬时值当峰值，界面上
+	// 就会出现「全程平均 13.8 / 峰值 73.9」这种自相矛盾的数字——
+	// 峰值必须是"能持续一秒以上的最高吞吐"，不是某一次的量化噪声。
+	OnWindow func(Sample)
 }
 
 // dlWin 是一个采样窗口。
 type dlWin struct {
 	t0    float64 // 窗口起点，相对开始时刻的毫秒
+	t1    float64 // 窗口终点。对外报的样本时刻必须是它，理由见 record() 里的注释
 	bytes int64   // 本窗口新增字节（不是累计值：判空窗必须看增量）
 	mbps  float64
 }
@@ -103,6 +113,7 @@ func RunDownload(ctx context.Context, tr *http.Transport, o DownloadOpts) *Resul
 	budgetBytes := o.BudgetBytes
 	dur := o.Duration
 	onSample := o.OnSample
+	onWindow := o.OnWindow
 	m := MetaByID("P1")
 	res := &Result{ID: m.ID, Name: m.Name, Group: m.Group, Status: StatusRunning, Samples: []Sample{}}
 	started := time.Now()
@@ -286,6 +297,10 @@ func RunDownload(ctx context.Context, tr *http.Transport, o DownloadOpts) *Resul
 			defer ticker.Stop()
 			lastBytes := int64(0)
 			lastAt := started
+			// winCum 是与 wins 同序的累计字节。窗口样本走的是与最终结论
+			// （concludeLongRun 里的 series）**完全同一套聚合**，
+			// 界面上跑动中的高点和跑完给出的峰值才会是同一个数。
+			winCum := int64(0)
 			record := func(now time.Time) {
 				cur := total.Load()
 				delta := cur - lastBytes
@@ -294,10 +309,23 @@ func RunDownload(ctx context.Context, tr *http.Transport, o DownloadOpts) *Resul
 				if dt > 0 {
 					mbps = float64(delta) * 8 / 1e6 / dt
 				}
+				t0 := float64(lastAt.Sub(started).Milliseconds())
+				// 对外报**窗口终点**，不是起点。
+				//
+				// 样本里的 Bytes 是"到这一刻为止累计下了多少"，所以时刻必须取
+				// 同一个瞬间的终点。用起点会让"总字节÷已跑时长"凭空多算一个窗口：
+				// 实测 3 分钟 6 并发的头 21 秒，起点口径报「全程平均 39.9 Mbps」，
+				// 而同一屏的「峰值」只有 36.4——平均值比峰值还高，用户立刻不信这个工具。
+				t1 := float64(now.Sub(started).Milliseconds())
 				wMu.Lock()
-				wins = append(wins, dlWin{t0: float64(lastAt.Sub(started).Milliseconds()), bytes: delta, mbps: Round(mbps, 2)})
+				wins = append(wins, dlWin{t0: t0, t1: t1, bytes: delta, mbps: Round(mbps, 2)})
 				wMu.Unlock()
+				winCum += delta
 				lastBytes, lastAt = cur, now
+				// 回调放在锁外：广播本身有 IO，持锁会阻塞下载协程的计数读取。
+				if onWindow != nil {
+					onWindow(Sample{T: t1, Mbps: Round(mbps, 2), Bytes: winCum})
+				}
 			}
 			// 收尾时补一个不满整窗的尾窗：真实跑到一半被预算/取消截断时，
 			// 最后这几秒的字节不该凭空消失（否则「窗口字节之和」与「总字节」对不上，
@@ -645,7 +673,8 @@ func concludeLongRun(res *Result, in longRunInput) *Result {
 	cum := int64(0)
 	for _, w := range wins {
 		cum += w.bytes
-		series = append(series, Sample{T: w.t0, Mbps: w.mbps, Bytes: cum})
+		// 时刻取窗口终点，与 onWindow 同口径——实时曲线与跑完的曲线因此逐点重合。
+		series = append(series, Sample{T: w.t1, Mbps: w.mbps, Bytes: cum})
 	}
 	res.Samples = series
 

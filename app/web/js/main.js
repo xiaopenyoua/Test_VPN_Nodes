@@ -399,9 +399,9 @@ function bindStream() {
         },
       });
     },
-    // 不走 store：4 小时是 57,600 个点，每来一个就 patch 一次状态，
-    // 等于每秒四次把整棵树重新发布给所有订阅者。曲线自己管缓冲。
-    bw_sample: (p) => bwPage.push(p.sample),
+    // 不走 store：4 小时是 2,880 个点，每来一个就 patch 一次状态，
+    // 等于每 5 秒把整棵树重新发布给所有订阅者。曲线自己管缓冲。
+    bw_window: (p) => bwPage.push(p.sample),
     bw_result: (p) => store.patch({
       bandwidth: { ...(store.state.bandwidth || {}), result: p.result },
     }),

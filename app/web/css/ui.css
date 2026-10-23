@@ -993,6 +993,14 @@ details summary {
   font: 600 15px/1 var(--round);
   color: var(--ink-3);
 }
+/* 主读数旁边的 MB/s 副读数：Mbps 是行业口径，MB/s 才是"多久下完一个文件"
+   的直觉单位。两个都摆出来，但不许它跟主读数抢注意力——差一档字号与颜色。 */
+.bw-now-alt {
+  font: 600 14px/1 var(--round);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.bw-now-alt:empty { display: none; }
 .bw-now-sub {
   font-size: 12.5px;
   color: var(--ink-3);
@@ -1031,6 +1039,39 @@ details summary {
 }
 .bw-empty[hidden] { display: none; }
 
+/* 悬浮读数：凸面小卡片，压在凹面的曲线板上。
+   用 transform 定位（不是 left/top）——鼠标移动时只有合成层在变，
+   不会触发布局计算。 */
+.bw-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 11px;
+  border-radius: 12px;
+  background: var(--clay-solid);
+  box-shadow: var(--sh-sm);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bw-tip[hidden] { display: none; }
+.bw-tip-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  font-size: 11.5px;
+  line-height: 1.25;
+  color: var(--ink-3);
+}
+.bw-tip-t { font-weight: 600; color: var(--ink-2); }
+.bw-tip-main { font: 700 13px/1.2 var(--round); color: var(--ink); }
+.bw-tip-alt { color: var(--ink-2); }
+.bw-tip-bytes { color: var(--ink-3); }
+
 /* ── 指标格 ── */
 .bw-stats {
   display: grid;
@@ -1060,6 +1101,15 @@ details summary {
 }
 .bw-stat-v.is-bad { color: var(--bad); }
 .bw-stat-v.is-warn { color: var(--warn); }
+/* 速度类格子下面那行 MB/s。空的时候必须整行消失，
+   否则「已下载」「断流」这些非速度格子会凭空多出一段间距。 */
+.bw-stat-alt {
+  font: 500 11.5px/1.2 var(--round);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bw-stat-alt:empty { display: none; }
 .bw-stat-wide { grid-column: 1 / -1; }
 
 .bw-meters {
@@ -1150,6 +1200,14 @@ details summary {
 .bw-fact-v.is-ok { color: var(--good); }
 .bw-fact-v.is-warn { color: var(--warn); }
 .bw-fact-v.is-bad { color: var(--bad); }
+/* 主值后面的 MB/s：同一行、低一档，读起来是「20.9 Mbps（2.6 MB/s）」。
+   空格子不会出现，所以不需要 :empty 兜底——不传 alt 就不渲染这个节点。 */
+.bw-fact-alt {
+  font: 500 11.5px/1 var(--round);
+  font-style: normal;
+  color: var(--ink-3);
+  margin-left: 5px;
+}
 
 .bw-evidence { display: flex; flex-direction: column; gap: 6px; }
 .bw-evidence-list { display: flex; flex-direction: column; gap: 5px; }
@@ -1194,4 +1252,7 @@ details summary {
   .bw-meters { grid-template-columns: minmax(0, 1fr); }
   .bw-chart { height: 176px; }
   .bw-acts .btn { flex: 1 1 0; min-width: 0; }
+  /* 窄屏两列，格子只有 150px 上下：把 MB/s 副读数收掉。
+     挤成「20.9 Mb…」比不显示更糟——半截数字会被当成另一个值。 */
+  .bw-fact-alt { display: none; }
 }

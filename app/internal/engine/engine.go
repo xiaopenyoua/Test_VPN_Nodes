@@ -430,8 +430,9 @@ func (e *Engine) runProbe(ctx context.Context, exit netx.Settings, id string, cf
 // ── 独立带宽长跑 ────────────────────────────────────────────────────
 
 // bwSampleCap 是快照里保留的采样点上限（两两合并前的阈值）。
-// 250ms 一个点、4 小时是 57,600 个：全留会让每次取快照都序列化几 MB JSON，
-// 而快照是给"中途打开页面"补历史用的，8 秒粒度的形状已经够看。
+// 长跑报上来的是 5 秒窗口而不是 250ms 瞬时点：4 小时也只有 2,880 个，
+// 本来就在上限之内，合并不再触发——这是把口径统一到窗口后的附带好处，
+// 快照体积从几 MB 降到百来 KB，而形状与最终报告逐点一致。
 const bwSampleCap = 3600
 
 // recordBandwidthSample 把采样点追加进运行状态，超过上限就两两合并。
@@ -553,10 +554,14 @@ func (e *Engine) executeBandwidth(ctx context.Context, st *State, br *BandwidthR
 		BudgetBytes: int64(cfg.BudgetMB) << 20,
 		Duration:    dur,
 		LongRun:     true,
-		OnSample: func(s probe.Sample) {
-			// 独立的采样事件名：综合测试的 P1 用的是 "sample"，
-			// 若这里沿用同一个名字，分评页那张 P1 卡会被长跑的曲线覆盖。
-			e.broadcast("bw_sample", map[string]interface{}{"runId": br.RunID, "sample": s})
+		// 长跑只把**5 秒窗口**报给前端，250ms 的瞬时值不再外发。
+		//
+		// 这不只是省带宽（4 小时 57,600 条 SSE → 2,880 条），更重要的是口径：
+		// 曲线、当前速率、峰值、P50/P90 必须与 concludeLongRun 的结论同源，
+		// 否则界面上会出现「全程平均 13.8 / 峰值 73.9」——峰值取的是某一次
+		// 代理缓冲区冲刷的量化噪声，而不是链路能持续的速度。
+		OnWindow: func(s probe.Sample) {
+			e.broadcast("bw_window", map[string]interface{}{"runId": br.RunID, "sample": s})
 			e.recordBandwidthSample(br, s)
 		},
 	})

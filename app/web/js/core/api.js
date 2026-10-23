@@ -43,7 +43,7 @@ export const api = {
     // 那两个名字的事件会被当成六项里 P1 的数据写进分评页。
     const types = [
       'snapshot', 'run_start', 'probe_start', 'sample', 'probe_result', 'score', 'run_end', 'error',
-      'bw_start', 'bw_sample', 'bw_result', 'bw_end',
+      'bw_start', 'bw_window', 'bw_result', 'bw_end',
     ];
     for (const t of types) {
       es.addEventListener(t, (ev) => {

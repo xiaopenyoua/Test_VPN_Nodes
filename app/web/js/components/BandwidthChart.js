@@ -4,6 +4,11 @@
 // SpeedChart 是"刚才那一小段速度抖不抖"（20 秒内的迷你折线）；
 // 这张要回答"两个小时里它有没有掉下来过"——需要坐标刻度、断流定位、
 // 以及跑得越久越压缩的时间轴。硬塞进一个函数只会让两边都变得难读。
+//
+// 数据口径：点来自后端的 5 秒窗口（与 concludeLongRun 完全同一套聚合），
+// 不是 250ms 瞬时值。这一点必须一致——用瞬时值画图时，图上最高的那根尖刺
+// 会和结果里的「峰值」是同一个数字，但它只是代理缓冲区一次性冲刷的量化噪声，
+// 不代表这条链路能持续多快。之前界面上「全程平均 13.8 / 峰值 73.9」就是这么来的。
 
 import { h } from '../core/dom.js';
 
@@ -57,6 +62,22 @@ function fmtTick(ms) {
   return `${hr}h${String(m % 60).padStart(2, '0')}m`;
 }
 
+// 悬浮浮层里的时刻要能读到秒：图上定位断流靠的就是"第几分几秒掉下去的"。
+function fmtClock(ms) {
+  const s = Math.max(0, Math.round(ms / 1000));
+  const hr = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const pad = (n) => String(n).padStart(2, '0');
+  return hr ? `${hr}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
+}
+
+function fmtMB(bytes) {
+  const mb = (bytes || 0) / (1 << 20);
+  if (mb >= 1024) return `${(mb / 1024).toFixed(2)} GB`;
+  return mb < 10 ? `${mb.toFixed(1)} MB` : `${mb.toFixed(0)} MB`;
+}
+
 // 时间轴的档位阶梯。
 //
 // 跑动中的横轴不能直接用"配置时长"：4 小时的长跑，前 10 分钟会全部挤在
@@ -82,11 +103,30 @@ function hexA(hex, alpha) {
 export function createBandwidthChart() {
   const canvas = h('canvas', { class: 'bw-canvas', role: 'img', 'aria-label': '实时下载速率曲线' });
   const empty = h('div', { class: 'bw-empty' }, '点「开始长跑」后，这里会实时画出速率曲线');
-  const wrap = h('div', { class: 'bw-chart' }, canvas, empty);
+
+  // ── 悬浮浮层 ──
+  // 用 DOM 而不是画在 canvas 上：文字要能被选中、缩放时不模糊，
+  // 也不需要在每次重绘时重新排版一遍。
+  const tipT = h('span', { class: 'bw-tip-t' }, '—');
+  const tipMain = h('span', { class: 'bw-tip-main' }, '—');
+  const tipAlt = h('span', { class: 'bw-tip-alt' }, '—');
+  const tipBytes = h('span', { class: 'bw-tip-bytes' }, '—');
+  const tip = h('div', { class: 'bw-tip', hidden: true },
+    h('div', { class: 'bw-tip-row' }, tipT),
+    h('div', { class: 'bw-tip-row' }, tipMain, tipAlt),
+    h('div', { class: 'bw-tip-row' }, tipBytes),
+  );
+
+  const wrap = h('div', { class: 'bw-chart' }, canvas, empty, tip);
 
   let pts = [];
   let opts = { totalMs: 0, running: false };
   let raf = 0;
+  // hoverIdx 指向 pts 里被指着的那一个点；-1 表示鼠标不在图上。
+  let hoverIdx = -1;
+  // paint 里的坐标映射是局部闭包。悬浮要用同一套，否则十字线会和曲线错位，
+  // 所以每次画完把几何量与 x()/y() 存下来给 pointermove 用。
+  let geom = null;
 
   function schedule() {
     if (raf) return;
@@ -95,6 +135,82 @@ export function createBandwidthChart() {
       paint();
     });
   }
+
+  // 二分找最接近的时间点。跑满 4 小时是 2,880 个点，
+  // 线性扫也能用，但鼠标一动就跑一遍会白白吃掉主线程。
+  function nearestIndex(t) {
+    if (!pts.length) return -1;
+    let lo = 0;
+    let hi = pts.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (pts[mid].t < t) lo = mid + 1;
+      else hi = mid;
+    }
+    if (lo > 0 && Math.abs(pts[lo - 1].t - t) <= Math.abs(pts[lo].t - t)) return lo - 1;
+    return lo;
+  }
+
+  function showTip(i) {
+    const p = pts[i];
+    if (!p || !geom) return;
+    const mbs = Math.max(0, p.mbps) / 8;
+    tipT.textContent = `第 ${fmtClock(p.t)}`;
+    tipMain.textContent = `${p.mbps.toFixed(p.mbps >= 100 ? 0 : 1)} Mbps`;
+    tipAlt.textContent = `${mbs.toFixed(mbs >= 10 ? 0 : 1)} MB/s`;
+    // 这一窗是 0 的时候，"累计下载"是唯一还能说明问题的一栏：
+    // 它没变，就证明这 5 秒真的一字节都没进来，不是算错了。
+    tipBytes.textContent = p.bytes ? `累计下载 ${fmtMB(p.bytes)}` : '这一窗没有数据进来';
+    tip.hidden = false;
+
+    const px = geom.x(p.t);
+    const py = geom.y(p.mbps);
+    const tw = tip.offsetWidth || 148;
+    const th = tip.offsetHeight || 60;
+    // 靠右时翻到左边：贴边被裁掉的浮层等于没有浮层。
+    let left = px + 14;
+    if (left + tw > geom.cssW - 6) left = px - tw - 14;
+    left = Math.max(6, Math.min(left, geom.cssW - tw - 6));
+    const top = Math.max(6, Math.min(py - th / 2, geom.cssH - th - 6));
+    tip.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`;
+  }
+
+  function onMove(ev) {
+    if (!geom || !pts.length) return;
+    const rect = wrap.getBoundingClientRect();
+    const px = ev.clientX - rect.left;
+    const { padL, plotW, totalMs } = geom;
+    if (px < padL - 4 || px > padL + plotW + 4) {
+      if (hoverIdx !== -1) {
+        hoverIdx = -1;
+        tip.hidden = true;
+        schedule();
+      }
+      return;
+    }
+    const t = ((px - padL) / plotW) * totalMs;
+    const i = nearestIndex(t);
+    if (i !== hoverIdx) {
+      hoverIdx = i;
+      schedule();
+    }
+    showTip(i);
+  }
+
+  function onLeave() {
+    if (hoverIdx === -1) return;
+    hoverIdx = -1;
+    tip.hidden = true;
+    schedule();
+  }
+
+  wrap.addEventListener('pointermove', onMove);
+  wrap.addEventListener('pointerleave', onLeave);
+  wrap.addEventListener('pointercancel', onLeave);
+  // 触摸屏上 pointerleave 不一定触发，抬手时兜底收掉。
+  wrap.addEventListener('pointerup', () => {
+    if (window.matchMedia && window.matchMedia('(hover: none)').matches) onLeave();
+  });
 
   function paint() {
     const dpr = window.devicePixelRatio || 1;
@@ -116,6 +232,13 @@ export function createBandwidthChart() {
 
     const live = pts.length > 0;
     empty.hidden = live;
+    if (!live) {
+      // 数据没了（换了一次跑 / 点了重测）时把悬浮状态一起清掉，
+      // 否则浮层会停在上一次那道曲线的位置上，指着不存在的点。
+      geom = null;
+      tip.hidden = true;
+      hoverIdx = -1;
+    }
 
     // 时间轴右端：跑动中按阶梯增长，结束后用实际跑完的时长。
     // 用"配置时长"会让 4 小时长跑的前 10 分钟挤在最左边一条缝里；
@@ -136,6 +259,7 @@ export function createBandwidthChart() {
     const top = axis.top;
     const x = (t) => padL + Math.min(1, Math.max(0, t / totalMs)) * plotW;
     const y = (v) => padT + plotH - Math.min(1, Math.max(0, v / top)) * plotH;
+    geom = { padL, padR, padT, padB, plotW, plotH, totalMs, top, cssW, cssH, x, y };
 
     // ── 网格与 y 轴刻度 ──
     ctx.font = FONT;
@@ -214,6 +338,30 @@ export function createBandwidthChart() {
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
     ctx.stroke();
+
+    // ── 悬浮十字线 ──
+    // 画在折线之上、游标之下：十字线是用来"指着一个点"的，
+    // 被曲线压住就失去意义；但也不能压住当前游标——那个点代表"现在"。
+    if (hoverIdx >= 0 && hoverIdx < pts.length) {
+      const hp = pts[hoverIdx];
+      const hx = x(hp.t);
+      const hy = y(hp.mbps);
+      ctx.strokeStyle = hexA(ink3, 0.45);
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(hx, padT);
+      ctx.lineTo(hx, padT + plotH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.arc(hx, hy, 4.6, 0, Math.PI * 2);
+      ctx.fillStyle = pink;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+    }
 
     // ── 当前游标 ──
     // 跑动中这一笔让"实时"看得见：曲线末端在动，数字也在跳。
